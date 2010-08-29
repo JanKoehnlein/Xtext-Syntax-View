@@ -1,5 +1,10 @@
 package org.eclipse.xtext.graph;
 
+import static org.eclipse.xtext.graph.figures.FigureFactory.NodeType.ERROR;
+import static org.eclipse.xtext.graph.figures.FigureFactory.NodeType.LABEL;
+import static org.eclipse.xtext.graph.figures.FigureFactory.NodeType.RECTANGLE;
+import static org.eclipse.xtext.graph.figures.FigureFactory.NodeType.ROUNDED;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -18,10 +23,11 @@ import org.eclipse.xtext.Keyword;
 import org.eclipse.xtext.ParserRule;
 import org.eclipse.xtext.RuleCall;
 import org.eclipse.xtext.UnorderedGroup;
+import org.eclipse.xtext.graph.figures.AbstractNode;
 import org.eclipse.xtext.graph.figures.Connection;
 import org.eclipse.xtext.graph.figures.CrossPoint;
 import org.eclipse.xtext.graph.figures.Diagram;
-import org.eclipse.xtext.graph.figures.AbstractNode;
+import org.eclipse.xtext.graph.figures.FigureFactory;
 import org.eclipse.xtext.graph.util.GridData;
 import org.eclipse.xtext.util.PolymorphicDispatcher;
 
@@ -30,7 +36,23 @@ import com.google.inject.internal.Lists;
 public class RailroadCreator {
 
 	protected PolymorphicDispatcher<CrossPoint> transformer = new PolymorphicDispatcher<CrossPoint>(
-			"transform", 3, 3, Collections.singletonList(this));
+			"transform", 3, 3, Collections.singletonList(this),
+			new PolymorphicDispatcher.ErrorHandler<CrossPoint>() {
+				@Override
+				public CrossPoint handle(Object[] params, Throwable throwable) {
+					EObject grammarElement = (params[0] instanceof EObject) ? (EObject) params[0]
+							: null;
+					GridData gridData = (GridData) params[2];
+					if (params[1] instanceof CrossPoint)
+						return createNode(ERROR, grammarElement, "ERROR",
+								(CrossPoint) params[1], gridData);
+					else
+						return createNode(ERROR, grammarElement, "ERROR",
+								gridData);
+				}
+			});
+
+	private FigureFactory factory;
 
 	private Font font;
 
@@ -41,33 +63,34 @@ public class RailroadCreator {
 	private Diagram diagram;
 
 	private int currentTrack;
-	
+
 	public Font getFont() {
 		return font;
 	}
 
-	public Diagram create(Grammar g, Font font) {
+	public Diagram create(Grammar grammar, Font font) {
 		this.font = font;
+		factory = new FigureFactory();
 		connectionRouter = new RailroadConnectionRouter();
 		layout = new RailroadLayout();
-		diagram = new Diagram(g);
+		diagram = factory.createDiagram(grammar);
 		diagram.setLayoutManager(layout);
 		GridData gridData = new GridData();
-		currentTrack=0;
-		for (AbstractRule r : g.getRules()) {
-			if (r instanceof ParserRule) {
+		currentTrack = 0;
+		for (AbstractRule rule : grammar.getRules()) {
+			if (rule instanceof ParserRule) {
 				gridData.resetColumn();
-				createNode(r, r.getName(), gridData);
+				createNode(LABEL, rule, rule.getName(), gridData);
 				CrossPoint entryPoint = createCrossPoint(gridData);
 				int entryRow = gridData.getRow();
-				CrossPoint lastNode = transformer.invoke(r.getAlternatives(),
-						entryPoint, gridData);
+				CrossPoint lastNode = transformer.invoke(
+						rule.getAlternatives(), entryPoint, gridData);
 				gridData.setRow(entryRow);
 				CrossPoint exitPoint = createCrossPoint(gridData);
-				createConnection(lastNode, exitPoint, false, true);
+				createConnection(lastNode, exitPoint);
 				gridData.setRow(gridData.getMaxRow());
 				gridData.incRow();
-				++ currentTrack;
+				++currentTrack;
 			}
 		}
 		return diagram;
@@ -95,12 +118,13 @@ public class RailroadCreator {
 
 	protected CrossPoint transform(Keyword k, CrossPoint predecessor,
 			GridData gridData) {
-		return createNode(k, k.getValue(), predecessor, gridData);
+		return createNode(RECTANGLE, k, k.getValue(), predecessor, gridData);
 	}
 
 	protected CrossPoint transform(RuleCall r, CrossPoint predecessor,
 			GridData gridData) {
-		return createNode(r, r.getRule().getName(), predecessor, gridData);
+		return createNode(ROUNDED, r, r.getRule().getName(), predecessor,
+				gridData);
 	}
 
 	protected CrossPoint transform(Assignment a, CrossPoint predecessor,
@@ -119,21 +143,22 @@ public class RailroadCreator {
 		return successor;
 	}
 
-	protected CrossPoint createNode(AbstractElement element, String name,
-			CrossPoint predecessor, GridData gridData) {
+	protected CrossPoint createNode(FigureFactory.NodeType nodeType,
+			EObject element, String name, CrossPoint predecessor,
+			GridData gridData) {
 		CrossPoint entryPoint = createCrossPoint(gridData);
-		createConnection(predecessor, entryPoint, false, false);
-		AbstractNode node = createNode(element, name, gridData);
-		createConnection(entryPoint, node, false, false);
+		createConnection(predecessor, entryPoint);
+		AbstractNode node = createNode(nodeType, element, name, gridData);
+		createConnection(entryPoint, node);
 		CrossPoint exitPoint = createCrossPoint(gridData);
-		createConnection(node, exitPoint, false, false);
+		createConnection(node, exitPoint);
 		addCardinalityConnections(entryPoint, exitPoint, element, gridData);
 		return exitPoint;
 	}
 
-	private AbstractNode createNode(EObject element, String name,
-			GridData gridData) {
-		AbstractNode node = AbstractNode.create(element, name);
+	private AbstractNode createNode(FigureFactory.NodeType nodeType,
+			EObject grammarElement, String name, GridData gridData) {
+		AbstractNode node = factory.createNode(nodeType, grammarElement, name);
 		gridData.incColumn();
 		layout.setConstraint(
 				node,
@@ -145,7 +170,7 @@ public class RailroadCreator {
 	}
 
 	protected CrossPoint createCrossPoint(GridData gridData) {
-		CrossPoint crossPoint = new CrossPoint();
+		CrossPoint crossPoint = factory.createCrossPoint();
 		diagram.add(crossPoint);
 		gridData.incColumn();
 		layout.setConstraint(
@@ -155,10 +180,8 @@ public class RailroadCreator {
 		return crossPoint;
 	}
 
-	protected Connection createConnection(CrossPoint source, CrossPoint target,
-			boolean isDecorateSource, boolean isDecorateTarget) {
-		Connection connection = new Connection(source, target,
-				isDecorateSource, isDecorateTarget);
+	protected Connection createConnection(CrossPoint source, CrossPoint target) {
+		Connection connection = factory.createConnection(source, target);
 		diagram.add(connection);
 		connection.setConnectionRouter(connectionRouter);
 		return connection;
@@ -167,7 +190,7 @@ public class RailroadCreator {
 	protected CrossPoint createParallel(CompoundElement compound,
 			CrossPoint predecessor, GridData gridData) {
 		CrossPoint entryPoint = createCrossPoint(gridData);
-		createConnection(predecessor, entryPoint, false, false);
+		createConnection(predecessor, entryPoint);
 		int startColumn = gridData.getColumn();
 		CrossPoint exitPoint = createCrossPoint(gridData);
 		GridData subGridData = gridData.clone();
@@ -183,7 +206,7 @@ public class RailroadCreator {
 			subGridData.aggregateMax(currentGridData);
 			subGridData.setRow(currentGridData.getMaxRow());
 			subGridData.incRow();
-			createConnection(subExitPoint, exitPoint, false, false);
+			createConnection(subExitPoint, exitPoint);
 		}
 		for (CrossPoint subExitPoint : subExitPoints) {
 			layout.getRailroadLayoutConstraint(subExitPoint).setColumn(
@@ -201,7 +224,7 @@ public class RailroadCreator {
 	protected CrossPoint createSequence(CompoundElement compound,
 			CrossPoint predecessor, GridData gridData) {
 		CrossPoint entryPoint = createCrossPoint(gridData);
-		createConnection(predecessor, entryPoint, false, false);
+		createConnection(predecessor, entryPoint);
 		GridData subGridData = gridData.clone();
 		subGridData.resetMax();
 		CrossPoint currentPredecessor = entryPoint;
@@ -220,15 +243,23 @@ public class RailroadCreator {
 	}
 
 	protected void addCardinalityConnections(CrossPoint entry, CrossPoint exit,
-			AbstractElement element, GridData gridData) {
-		boolean isMultiple = GrammarUtil.isMultipleCardinality(element);
-		boolean isOptional = GrammarUtil.isOptionalCardinality(element);
-		if (isMultiple || isOptional) {
-			gridData.incMaxRow();
-			Connection connection = createConnection(exit, entry, isMultiple,
-					isOptional);
-			layout.setConstraint(connection, new RailroadLayout.Constraint(
-					gridData.getMaxRow(), gridData.getColumn(), currentTrack));
+			EObject grammarElement, GridData gridData) {
+		if (grammarElement instanceof AbstractElement) {
+			AbstractElement element = (AbstractElement) grammarElement;
+			if (GrammarUtil.isOptionalCardinality(element)) {
+				gridData.incMaxRow();
+				Connection connection = createConnection(entry, exit);
+				layout.setConstraint(connection, new RailroadLayout.Constraint(
+						gridData.getMaxRow(), gridData.getColumn(),
+						currentTrack));
+			}
+			if (GrammarUtil.isMultipleCardinality(element)) {
+				gridData.incMaxRow();
+				Connection connection = createConnection(exit, entry);
+				layout.setConstraint(connection, new RailroadLayout.Constraint(
+						gridData.getMaxRow(), gridData.getColumn(),
+						currentTrack));
+			}
 		}
 	}
 

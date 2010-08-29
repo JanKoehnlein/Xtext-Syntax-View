@@ -1,7 +1,9 @@
 TODO:
-- selection highlihting
+- fix selection highlihting
 - link with editor
-- vspace between tacks
+- vspace between tracks
+- more crosspoints for cardinality connections
+- improve error handling
 
 DONE
 - implement tracks with separate row/column sizes 

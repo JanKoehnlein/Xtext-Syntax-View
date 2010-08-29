@@ -12,7 +12,8 @@ import org.eclipse.xtext.AbstractElement;
 import org.eclipse.xtext.Keyword;
 import org.eclipse.xtext.ParserRule;
 
-public abstract class AbstractNode extends CrossPoint implements IGrammarElementReferer {
+public abstract class AbstractNode extends CrossPoint implements
+		IGrammarElementReferer {
 
 	public static final int INSETS = 5;
 
@@ -32,7 +33,8 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 	}
 
 	protected AbstractNode(EObject grammarElement, String text) {
-		grammarElementURI = EcoreUtil.getURI(grammarElement);
+		if (grammarElement != null)
+			grammarElementURI = EcoreUtil.getURI(grammarElement);
 		setLayoutManager(new ToolbarLayout());
 		setBackgroundColor(ColorConstants.lightGray);
 		label = new Label(text);

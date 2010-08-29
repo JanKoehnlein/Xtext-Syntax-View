@@ -28,16 +28,20 @@ public class RailroadConnectionRouter extends AbstractRouter {
 		if (constraint instanceof LoopConstraint) {
 			int loopY = ((LoopConstraint) constraint).getLoopY();
 			int direction = Integer.signum(endPoint.x - startPoint.x);
-			points.addPoint(startPoint.x, loopY - RADIUS);
-			points.addPoint(startPoint.x + direction * RADIUS, loopY);
-			points.addPoint(endPoint.x - direction * RADIUS, loopY);
-			points.addPoint(endPoint.x, loopY - RADIUS);
+			points.addPoint(startPoint.x + RADIUS, startPoint.y + RADIUS);
+			points.addPoint(startPoint.x + RADIUS, loopY - RADIUS);
+			points.addPoint(startPoint.x  + RADIUS + direction * RADIUS, loopY);
+			points.addPoint(endPoint.x - RADIUS -direction * RADIUS, loopY);
+			points.addPoint(endPoint.x - RADIUS, loopY - RADIUS);
+			points.addPoint(endPoint.x - RADIUS, endPoint.y + RADIUS);
 		} else if (startPoint.y < endPoint.y) {
-			points.addPoint(startPoint.x, endPoint.y - RADIUS);
-			points.addPoint(startPoint.x + RADIUS, endPoint.y);
+			points.addPoint(startPoint.x + RADIUS, startPoint.y + RADIUS);
+			points.addPoint(startPoint.x + RADIUS, endPoint.y - RADIUS);
+			points.addPoint(startPoint.x + 2 * RADIUS, endPoint.y);
 		} else if (startPoint.y > endPoint.y) {
-			points.addPoint(endPoint.x - RADIUS, startPoint.y);
-			points.addPoint(endPoint.x, startPoint.y - RADIUS);
+			points.addPoint(endPoint.x - 2 * RADIUS, startPoint.y);
+			points.addPoint(endPoint.x - RADIUS, startPoint.y - RADIUS);
+			points.addPoint(endPoint.x - RADIUS, endPoint.y + RADIUS);
 		}
 		points.addPoint(endPoint);
 		connection.setPoints(points);
