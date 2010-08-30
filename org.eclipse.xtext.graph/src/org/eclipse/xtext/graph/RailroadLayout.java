@@ -19,8 +19,8 @@ import com.google.common.collect.Maps;
 
 public class RailroadLayout extends AbstractLayout {
 
-	private static final int HSPACE = 5;
-	private static final int VSPACE = 10;
+	public static final int HSPACE = 5;
+	public static final int VSPACE = 10;
 
 	private Map<IFigure, Constraint> constraints = Maps.newHashMap();
 

@@ -3,6 +3,8 @@ package org.eclipse.xtext.graph.trafo;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.xtext.AbstractElement;
 import org.eclipse.xtext.CompoundElement;
 import org.eclipse.xtext.Grammar;
@@ -27,12 +29,29 @@ public class RailroadFactory {
 
 	private RailroadTransformer transformer;
 	
+	private Font font; 
+	
 	public RailroadFactory() {
 		connectionRouter = new RailroadConnectionRouter();
 		layout = new RailroadLayout();
 		transformer = new RailroadTransformer(this);
 	}
 
+	protected Font getFont() {
+		if(font == null) {
+			if(Display.getCurrent() != null) {
+				font = Display.getCurrent().getSystemFont();
+			} else {
+				Display.getDefault().syncExec(new Runnable() {
+					@Override
+					public void run() {
+						font = Display.getCurrent().getSystemFont();
+					}
+				});
+			}
+		}
+		return font;
+	}
 	public Diagram createDiagram(Grammar grammar) {
 		Diagram diagram = new Diagram(grammar);
 		diagram.setLayoutManager(layout);
@@ -175,13 +194,13 @@ public class RailroadFactory {
 			String text) {
 		switch (type) {
 		case RECTANGLE:
-			return new RectangleNode(grammarElement, text);
+			return new RectangleNode(grammarElement, text, getFont());
 		case ROUNDED:
-			return new RoundedNode(grammarElement, text);
+			return new RoundedNode(grammarElement, text, getFont());
 		case ERROR:
-			return new ErrorNode(grammarElement, text);
+			return new ErrorNode(grammarElement, text, getFont());
 		case LABEL:
-			return new LabelNode(grammarElement, text);
+			return new LabelNode(grammarElement, text, getFont());
 		default:
 			throw new IllegalArgumentException("Unknown node type " + type);
 		}

@@ -5,6 +5,7 @@ TODO:
 - link with editor
 
 DONE
+- export to file action
 - fix selection highlighting
 - row of assignment cardinality conntections
 - improve error handling

@@ -7,19 +7,20 @@ import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 
 public class RoundedNode extends AbstractNode {
 
 	public static final int RADIUS = 7;
 
-	public RoundedNode(EObject grammarElement, String text) {
-		super(grammarElement, text);
+	public RoundedNode(EObject grammarElement, String text, Font font) {
+		super(grammarElement, text, font);
 		setOpaque(true);
 	}
 
 	@Override
 	protected Border createBorder() {
-		return new MarginBorder(INSETS);
+		return new MarginBorder(PADDING);
 	}
 
 	@Override
