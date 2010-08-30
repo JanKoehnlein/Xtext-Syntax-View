@@ -36,6 +36,7 @@ public class CardinalityConnectionHelper {
 			if (isOptional) {
 				optionalEntry = createAndConnectCrossPoint(
 						currentPredecessor, gridData);
+				// add an aditional crosspoint to avoid collisions with following connections 
 				currentPredecessor = createAndConnectCrossPoint(optionalEntry, gridData);
 			}
 		}

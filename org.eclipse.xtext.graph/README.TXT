@@ -4,6 +4,7 @@ TODO:
 - vspace between tracks
 - improve error handling
 - layout back arrows above
+- Guicify 
 
 DONE
 - more crosspoints for cardinality connections

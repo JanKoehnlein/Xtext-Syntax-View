@@ -141,9 +141,12 @@ public class RailroadCreator {
 	protected CrossPoint transformRecursive(AbstractElement element, AbstractElement child, CrossPoint predecessor, GridData gridData) {
 		CardinalityConnectionHelper helper = new CardinalityConnectionHelper(this, element);
 		predecessor = helper.createEntryPoints(predecessor, gridData);
+		GridData subGridData = gridData.clone();
 		CrossPoint successor = transformer.invoke(child, predecessor,
-				gridData);
-		successor = helper.createAndConnectExitPoints(successor, gridData); 
+				subGridData);
+		successor = helper.createAndConnectExitPoints(successor, subGridData);
+		gridData.aggregateMax(subGridData);
+		gridData.setColumn(subGridData.getMaxColumn());
 		return successor;
 	}
 
@@ -152,9 +155,12 @@ public class RailroadCreator {
 			GridData gridData) {
 		CardinalityConnectionHelper helper = new CardinalityConnectionHelper(this, element);
 		predecessor = helper.createEntryPoints(predecessor, gridData);
+		gridData.resetMax();
 		AbstractNode node = createNode(nodeType, element, name, gridData);
 		createConnection(predecessor, node);
 		CrossPoint exitPoint = helper.createAndConnectExitPoints(node, gridData);
+		gridData.aggregateMax(gridData);
+		gridData.setColumn(gridData.getColumn());
 		return exitPoint;
 	}
 
