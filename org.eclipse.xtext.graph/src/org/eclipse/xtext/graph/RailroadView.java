@@ -39,14 +39,12 @@ public class RailroadView extends ViewPart {
 	@Override
 	public void init(IViewSite site) throws PartInitException {
 		super.init(site);
-		site.getWorkbenchWindow().getPartService()
-				.addPartListener(synchronizer);
+		site.getWorkbenchWindow().getPartService().addPartListener(synchronizer);
 	}
 
 	@Override
 	public void dispose() {
-		getSite().getWorkbenchWindow().getPartService()
-				.addPartListener(synchronizer);
+		getSite().getWorkbenchWindow().getPartService().addPartListener(synchronizer);
 		super.dispose();
 	}
 
@@ -54,12 +52,12 @@ public class RailroadView extends ViewPart {
 		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				scrollPane.setContents(diagram);	
+				scrollPane.setContents(diagram);
 				scrollPane.revalidate();
 			}
 		});
 	}
-	
+
 	public IFigure findFigureAt(Point location) {
 		return scrollPane.findFigureAt(location);
 	}

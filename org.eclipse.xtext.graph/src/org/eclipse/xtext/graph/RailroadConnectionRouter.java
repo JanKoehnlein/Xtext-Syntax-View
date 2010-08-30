@@ -30,8 +30,8 @@ public class RailroadConnectionRouter extends AbstractRouter {
 			int direction = Integer.signum(endPoint.x - startPoint.x);
 			points.addPoint(startPoint.x + RADIUS, startPoint.y + RADIUS);
 			points.addPoint(startPoint.x + RADIUS, loopY - RADIUS);
-			points.addPoint(startPoint.x  + RADIUS + direction * RADIUS, loopY);
-			points.addPoint(endPoint.x - RADIUS -direction * RADIUS, loopY);
+			points.addPoint(startPoint.x + RADIUS + direction * RADIUS, loopY);
+			points.addPoint(endPoint.x - RADIUS - direction * RADIUS, loopY);
 			points.addPoint(endPoint.x - RADIUS, loopY - RADIUS);
 			points.addPoint(endPoint.x - RADIUS, endPoint.y + RADIUS);
 		} else if (startPoint.y < endPoint.y) {

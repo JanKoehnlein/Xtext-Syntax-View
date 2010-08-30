@@ -1,10 +1,12 @@
 package org.eclipse.xtext.graph.figures;
 
 import org.eclipse.draw2d.Border;
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.swt.graphics.Color;
 
 public class RoundedNode extends AbstractNode {
 
@@ -14,10 +16,15 @@ public class RoundedNode extends AbstractNode {
 		super(grammarElement, text);
 		setOpaque(true);
 	}
-	
+
 	@Override
 	protected Border createBorder() {
 		return new MarginBorder(INSETS);
+	}
+
+	@Override
+	protected Color getUnselectedBackgroundColor() {
+		return ColorConstants.buttonDarker;
 	}
 
 	@Override
@@ -32,9 +39,7 @@ public class RoundedNode extends AbstractNode {
 		r.width -= inset1 + inset2;
 		r.height -= inset1 + inset2;
 
-		graphics.fillRoundRectangle(r, Math.max(0, RADIUS - (int) lineInset),
-				Math.max(0, RADIUS - (int) lineInset));
-		graphics.drawRoundRectangle(r, Math.max(0, RADIUS - (int) lineInset),
-				Math.max(0, RADIUS - (int) lineInset));
+		graphics.fillRoundRectangle(r, Math.max(0, RADIUS - (int) lineInset), Math.max(0, RADIUS - (int) lineInset));
+		graphics.drawRoundRectangle(r, Math.max(0, RADIUS - (int) lineInset), Math.max(0, RADIUS - (int) lineInset));
 	}
 }

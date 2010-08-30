@@ -7,13 +7,14 @@ import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.xtext.AbstractElement;
 import org.eclipse.xtext.Keyword;
 import org.eclipse.xtext.ParserRule;
 
-public abstract class AbstractNode extends CrossPoint implements
-		IGrammarElementReferer {
+public abstract class AbstractNode extends CrossPoint implements IGrammarElementReferer {
 
 	public static final int INSETS = 5;
 
@@ -36,9 +37,10 @@ public abstract class AbstractNode extends CrossPoint implements
 		if (grammarElement != null)
 			grammarElementURI = EcoreUtil.getURI(grammarElement);
 		setLayoutManager(new ToolbarLayout());
-		setBackgroundColor(ColorConstants.lightGray);
+		setBackgroundColor(getUnselectedBackgroundColor());
 		label = new Label(text);
 		add(label);
+		setFont(Display.getDefault().getSystemFont());
 		setBorder(createBorder());
 	}
 
@@ -50,15 +52,23 @@ public abstract class AbstractNode extends CrossPoint implements
 		label.setFont(f);
 	}
 
-	public void setSelected(boolean selected) {
-		if (selected != isSelected) {
-			if (selected)
-				setBackgroundColor(ColorConstants.lightBlue);
+	public void setSelected(boolean isSelected) {
+		if (isSelected != this.isSelected) {
+			if (isSelected)
+				setBackgroundColor(getSelectedBackgroundColor());
 			else
-				setBackgroundColor(ColorConstants.lightGray);
-			isSelected = selected;
+				setBackgroundColor(getUnselectedBackgroundColor());
+			this.isSelected = isSelected;
 			invalidate();
 		}
+	}
+
+	protected Color getSelectedBackgroundColor() {
+		return ColorConstants.lightBlue;
+	}
+
+	protected Color getUnselectedBackgroundColor() {
+		return ColorConstants.buttonLightest;
 	}
 
 	public URI getGrammarElementURI() {

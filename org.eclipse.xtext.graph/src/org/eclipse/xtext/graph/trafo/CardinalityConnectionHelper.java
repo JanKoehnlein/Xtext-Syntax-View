@@ -4,25 +4,28 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.AbstractElement;
 import org.eclipse.xtext.GrammarUtil;
 import org.eclipse.xtext.graph.figures.CrossPoint;
-import org.eclipse.xtext.graph.util.GridData;
+import org.eclipse.xtext.graph.figures.Diagram;
 
 public class CardinalityConnectionHelper {
-	private RailroadCreator creator;
+	private RailroadFactory factory;
+	private EObject grammarElement;
+	private Diagram diagram;
+	
 	private CrossPoint loopEntry;
 	private CrossPoint optionalEntry;
 
 	private boolean isOptional;
 	private boolean isMultiple;
-	private EObject grammarElement;
 
-	public CardinalityConnectionHelper(RailroadCreator creator,
-			EObject grammarElement) {
+	public CardinalityConnectionHelper(RailroadFactory factory,
+			EObject grammarElement, Diagram diagram) {
+		this.factory = factory;
 		this.grammarElement = grammarElement;
-		this.creator = creator;
+		this.diagram = diagram;
 	}
 
 	public CrossPoint createEntryPoints(CrossPoint predecessor,
-			GridData gridData) {
+			GridPointer gridPointer) {
 		CrossPoint currentPredecessor = predecessor;
 		if (grammarElement instanceof AbstractElement) {
 			AbstractElement element = (AbstractElement) grammarElement;
@@ -30,45 +33,45 @@ public class CardinalityConnectionHelper {
 			isMultiple = GrammarUtil.isMultipleCardinality(element);
 			if (isMultiple) {
 				loopEntry = createAndConnectCrossPoint(currentPredecessor,
-						gridData);
+						gridPointer);
 				currentPredecessor = loopEntry;
 			}
 			if (isOptional) {
 				optionalEntry = createAndConnectCrossPoint(
-						currentPredecessor, gridData);
+						currentPredecessor, gridPointer);
 				// add an aditional crosspoint to avoid collisions with following connections 
-				currentPredecessor = createAndConnectCrossPoint(optionalEntry, gridData);
+				currentPredecessor = createAndConnectCrossPoint(optionalEntry, gridPointer);
 			}
 		}
 		return currentPredecessor;
 	}
 
 	public CrossPoint createAndConnectExitPoints(CrossPoint predecesor,
-			GridData gridData) {
+			GridPointer gridPointer) {
 		CrossPoint currentSuccessor = predecesor;
 		if (isOptional) {
 			CrossPoint optionalExit = createAndConnectCrossPoint(
-					currentSuccessor, gridData);
-			creator.createCardinalityConnection(optionalEntry,
-					optionalExit, gridData);
+					currentSuccessor, gridPointer);
+			factory.createCardinalityConnection(optionalEntry,
+					optionalExit, gridPointer, diagram);
 			currentSuccessor = optionalExit;
 		}
 		if (isMultiple) {
 			CrossPoint loopExit = createAndConnectCrossPoint(
-					currentSuccessor, gridData);
-			creator.createCardinalityConnection(loopExit, loopEntry,
-					gridData);
+					currentSuccessor, gridPointer);
+			factory.createCardinalityConnection(loopExit, loopEntry,
+					gridPointer, diagram);
 			// add an aditional crosspoint to avoid collisions with following connections 
-			currentSuccessor = createAndConnectCrossPoint(loopExit, gridData);
+			currentSuccessor = createAndConnectCrossPoint(loopExit, gridPointer);
 		}
 		return currentSuccessor;
 
 	}
 
 	private CrossPoint createAndConnectCrossPoint(CrossPoint predecessor,
-			GridData gridData) {
-		CrossPoint crossPoint = creator.createCrossPoint(gridData);
-		creator.createConnection(predecessor, crossPoint);
+			GridPointer gridPointer) {
+		CrossPoint crossPoint = factory.createCrossPoint(gridPointer, diagram);
+		factory.createConnection(predecessor, crossPoint, diagram);
 		return crossPoint;
 	}
 

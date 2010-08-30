@@ -21,8 +21,8 @@ public class Connection extends PolylineConnection {
 		setTargetAnchor(targetAnchor);
 	}
 
-	public static class Anchor extends ChopboxAnchor {
-		
+	protected static class Anchor extends ChopboxAnchor {
+
 		public Anchor(IFigure owner) {
 			super(owner);
 		}

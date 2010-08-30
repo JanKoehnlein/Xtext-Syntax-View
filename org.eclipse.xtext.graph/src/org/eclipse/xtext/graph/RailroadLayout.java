@@ -38,26 +38,22 @@ public class RailroadLayout extends AbstractLayout {
 					maxTrack = Math.max(track, maxTrack);
 					if (child instanceof CrossPoint) {
 						CrossPoint crossPoint = (CrossPoint) child;
-						Dimension preferredSize = crossPoint.getPreferredSize(
-								-1, -1);
+						Dimension preferredSize = crossPoint.getPreferredSize(-1, -1);
 						MaxSizeAggregator columnWidths = track2columnWidths.get(track);
-						if(columnWidths == null) {
+						if (columnWidths == null) {
 							columnWidths = new MaxSizeAggregator();
 							track2columnWidths.put(track, columnWidths);
 						}
-						columnWidths.aggregate(constraint.getColumn(), 2
-								* HSPACE + preferredSize.width);
-						rowHeights.aggregate(constraint.getRow(), VSPACE
-								+ preferredSize.height);
+						columnWidths.aggregate(constraint.getColumn(), 2 * HSPACE + preferredSize.width);
+						rowHeights.aggregate(constraint.getRow(), VSPACE + preferredSize.height);
 					} else if (child instanceof Connection) {
-						rowHeights.aggregate(
-								((Constraint) constraint).getRow(), VSPACE);
+						rowHeights.aggregate(((Constraint) constraint).getRow(), VSPACE);
 					}
 				}
 			}
 
 			List<int[]> x = Lists.newArrayList();
-			for(int track=0; track<=maxTrack; ++ track) {
+			for (int track = 0; track <= maxTrack; ++track) {
 				x.add(track2columnWidths.get(track).getPositions());
 			}
 			int[] y = rowHeights.getPositions();
@@ -68,38 +64,31 @@ public class RailroadLayout extends AbstractLayout {
 					int track = constraint.getTrack();
 					int row = constraint.getRow();
 					int rowPosition = y[row];
-					int rowHeight = rowHeights.get(row); 
-					
+					int rowHeight = rowHeights.get(row);
+
 					if (child instanceof CrossPoint) {
 						CrossPoint crossPoint = (CrossPoint) child;
-						Dimension preferredSize = crossPoint.getPreferredSize(
-								-1, rowHeight);
-						int voffset = (child instanceof AbstractNode) ? 0
-								: (rowHeight - VSPACE) / 2;
-						Rectangle bounds = new Rectangle(
-								x.get(track)[constraint.getColumn()], rowPosition + voffset,
+						Dimension preferredSize = crossPoint.getPreferredSize(-1, rowHeight);
+						int voffset = (child instanceof AbstractNode) ? 0 : (rowHeight - VSPACE) / 2;
+						Rectangle bounds = new Rectangle(x.get(track)[constraint.getColumn()], rowPosition + voffset,
 								preferredSize.width, preferredSize.height);
 						crossPoint.setBounds(bounds);
 						diagramBounds.union(bounds);
 					} else if (child instanceof Connection) {
 						Connection connection = (Connection) child;
-						ConnectionRouter connectionRouter = connection
-								.getConnectionRouter();
-						connectionRouter.setConstraint(connection,
-								new RailroadConnectionRouter.LoopConstraint(
-										rowPosition + (rowHeight - VSPACE) / 2));
+						ConnectionRouter connectionRouter = connection.getConnectionRouter();
+						connectionRouter.setConstraint(connection, new RailroadConnectionRouter.LoopConstraint(
+								rowPosition + (rowHeight - VSPACE) / 2));
 						diagramBounds.union(connection.getBounds());
 					}
 				}
 			}
-			preferredSize = new Dimension(diagramBounds.width,
-					diagramBounds.height);
+			preferredSize = new Dimension(diagramBounds.width, diagramBounds.height);
 		}
 	}
 
 	@Override
-	protected Dimension calculatePreferredSize(IFigure container, int wHint,
-			int hHint) {
+	protected Dimension calculatePreferredSize(IFigure container, int wHint, int hHint) {
 		if (preferredSize == null) {
 			layout(container);
 		}

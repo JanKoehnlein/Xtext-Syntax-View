@@ -1,11 +1,11 @@
 TODO:
 - Guicify 
 - layout back arrows above
-- fix selection highlighting
 - vspace between tracks
 - link with editor
 
 DONE
+- fix selection highlighting
 - row of assignment cardinality conntections
 - improve error handling
 - more crosspoints for cardinality connections
