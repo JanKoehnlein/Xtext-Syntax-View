@@ -2,10 +2,12 @@ TODO:
 - fix selection highlihting
 - link with editor
 - vspace between tracks
-- more crosspoints for cardinality connections
 - improve error handling
+- layout back arrows above
 
 DONE
+- more crosspoints for cardinality connections
+- less crosspoints when not necessary
 - implement tracks with separate row/column sizes 
 - add a rule marker
 - fix canvas scrolling

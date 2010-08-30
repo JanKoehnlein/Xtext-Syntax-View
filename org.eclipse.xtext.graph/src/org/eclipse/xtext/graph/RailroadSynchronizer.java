@@ -8,6 +8,7 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.xtext.Grammar;
 import org.eclipse.xtext.graph.figures.Diagram;
+import org.eclipse.xtext.graph.trafo.RailroadCreator;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.model.IXtextDocument;
