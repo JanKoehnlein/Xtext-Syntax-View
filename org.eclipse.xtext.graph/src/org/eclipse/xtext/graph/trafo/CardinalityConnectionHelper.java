@@ -3,6 +3,7 @@ package org.eclipse.xtext.graph.trafo;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.AbstractElement;
 import org.eclipse.xtext.GrammarUtil;
+import org.eclipse.xtext.UnorderedGroup;
 import org.eclipse.xtext.graph.figures.CrossPoint;
 import org.eclipse.xtext.graph.figures.Diagram;
 
@@ -30,7 +31,7 @@ public class CardinalityConnectionHelper {
 		if (grammarElement instanceof AbstractElement) {
 			AbstractElement element = (AbstractElement) grammarElement;
 			isOptional = GrammarUtil.isOptionalCardinality(element);
-			isMultiple = GrammarUtil.isMultipleCardinality(element);
+			isMultiple = GrammarUtil.isMultipleCardinality(element) || grammarElement instanceof UnorderedGroup;
 			if (isMultiple) {
 				loopEntry = createAndConnectCrossPoint(currentPredecessor,
 						gridPointer);
