@@ -4,6 +4,9 @@ import java.util.HashMap;
 
 import com.google.inject.internal.Maps;
 
+/**
+ * @author koehnlein
+ */
 public class MaxSizeAggregator {
 
 	private HashMap<Integer, Integer> sizes = Maps.newHashMap();

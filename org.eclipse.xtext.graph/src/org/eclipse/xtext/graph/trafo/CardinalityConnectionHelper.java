@@ -7,11 +7,16 @@ import org.eclipse.xtext.UnorderedGroup;
 import org.eclipse.xtext.graph.figures.CrossPoint;
 import org.eclipse.xtext.graph.figures.Diagram;
 
+/**
+ * Helps to calculate connections resulting from cardinalities.
+ * 
+ * @author koehnlein
+ */
 public class CardinalityConnectionHelper {
 	private RailroadFactory factory;
 	private EObject grammarElement;
 	private Diagram diagram;
-	
+
 	private CrossPoint loopEntry;
 	private CrossPoint optionalEntry;
 
@@ -31,17 +36,20 @@ public class CardinalityConnectionHelper {
 		if (grammarElement instanceof AbstractElement) {
 			AbstractElement element = (AbstractElement) grammarElement;
 			isOptional = GrammarUtil.isOptionalCardinality(element);
-			isMultiple = GrammarUtil.isMultipleCardinality(element) || grammarElement instanceof UnorderedGroup;
+			isMultiple = GrammarUtil.isMultipleCardinality(element)
+					|| grammarElement instanceof UnorderedGroup;
 			if (isMultiple) {
 				loopEntry = createAndConnectCrossPoint(currentPredecessor,
 						gridPointer);
 				currentPredecessor = loopEntry;
 			}
 			if (isOptional) {
-				optionalEntry = createAndConnectCrossPoint(
-						currentPredecessor, gridPointer);
-				// add an aditional crosspoint to avoid collisions with following connections 
-				currentPredecessor = createAndConnectCrossPoint(optionalEntry, gridPointer);
+				optionalEntry = createAndConnectCrossPoint(currentPredecessor,
+						gridPointer);
+				// add an aditional crosspoint to avoid collisions with
+				// following connections
+				currentPredecessor = createAndConnectCrossPoint(optionalEntry,
+						gridPointer);
 			}
 		}
 		return currentPredecessor;
@@ -53,16 +61,17 @@ public class CardinalityConnectionHelper {
 		if (isOptional) {
 			CrossPoint optionalExit = createAndConnectCrossPoint(
 					currentSuccessor, gridPointer);
-			factory.createCardinalityConnection(optionalEntry,
-					optionalExit, gridPointer, diagram);
+			factory.createCardinalityConnection(optionalEntry, optionalExit,
+					gridPointer, diagram);
 			currentSuccessor = optionalExit;
 		}
 		if (isMultiple) {
-			CrossPoint loopExit = createAndConnectCrossPoint(
-					currentSuccessor, gridPointer);
+			CrossPoint loopExit = createAndConnectCrossPoint(currentSuccessor,
+					gridPointer);
 			factory.createCardinalityConnection(loopExit, loopEntry,
 					gridPointer, diagram);
-			// add an aditional crosspoint to avoid collisions with following connections 
+			// add an aditional crosspoint to avoid collisions with following
+			// connections
 			currentSuccessor = createAndConnectCrossPoint(loopExit, gridPointer);
 		}
 		return currentSuccessor;

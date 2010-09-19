@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 
-<!--
- <copyright>
- </copyright>
-
- $Id$
--->
-
 <plugin>
-
    <extension
          point="org.eclipse.ui.views">
       <view
             category="org.eclipse.ui"
-            class="org.eclipse.xtext.graph.RailroadView"
+            class="org.eclipse.xtext.graph.bundle.RailroadViewExecutableExtensionRegistry:org.eclipse.xtext.graph.RailroadView"
             id="org.eclipse.xtext.graph.view"
             name="Xtext Syntax Graph"
             restorable="true">
       </view>
    </extension>
-
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.xtext.graph.bundle.RailroadViewExecutableExtensionRegistry:org.eclipse.xtext.graph.RailroadViewPreferences">
+      </initializer>
+   </extension>
 </plugin>

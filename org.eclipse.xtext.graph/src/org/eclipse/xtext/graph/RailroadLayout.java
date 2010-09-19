@@ -8,15 +8,20 @@ import org.eclipse.draw2d.ConnectionRouter;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.xtext.graph.figures.AbstractNode;
 import org.eclipse.xtext.graph.figures.Connection;
 import org.eclipse.xtext.graph.figures.CrossPoint;
 import org.eclipse.xtext.graph.figures.Diagram;
-import org.eclipse.xtext.graph.figures.AbstractNode;
 import org.eclipse.xtext.graph.util.MaxSizeAggregator;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.inject.Singleton;
 
+/**
+ * @author koehnlein
+ */
+@Singleton
 public class RailroadLayout extends AbstractLayout {
 
 	public static final int HSPACE = 5;

@@ -6,6 +6,11 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.Grammar;
 
+/**
+ * The railroad diagram figure.
+ * 
+ * @author koehnlein
+ */
 public class Diagram extends Figure implements IGrammarElementReferer {
 
 	private URI grammarElementURI;

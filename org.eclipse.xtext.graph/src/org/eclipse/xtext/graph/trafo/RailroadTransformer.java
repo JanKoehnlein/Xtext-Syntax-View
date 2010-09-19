@@ -22,6 +22,13 @@ import org.eclipse.xtext.graph.figures.CrossPoint;
 import org.eclipse.xtext.graph.figures.Diagram;
 import org.eclipse.xtext.util.PolymorphicDispatcher;
 
+import com.google.inject.Inject;
+
+/**
+ * Transforms an Xtext grammar model into a diagram with nodes ans edges.
+ * 
+ * @author koehnlein
+ */
 public class RailroadTransformer {
 
 	private PolymorphicDispatcher<CrossPoint> transformer = new PolymorphicDispatcher<CrossPoint>("transformInternal",
@@ -39,11 +46,8 @@ public class RailroadTransformer {
 				}
 			});
 
+	@Inject
 	private RailroadFactory factory;
-
-	public RailroadTransformer(RailroadFactory factory) {
-		this.factory = factory;
-	}
 
 	public Diagram transform(Grammar grammar, GridPointer gridPointer, Diagram diagram) {
 		for (AbstractRule rule : grammar.getRules()) {

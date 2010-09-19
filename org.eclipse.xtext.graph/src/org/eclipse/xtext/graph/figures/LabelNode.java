@@ -5,6 +5,11 @@ import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.graphics.Font;
 
+/**
+ * A node showing a label only.
+ * 
+ * @author koehnlein
+ */
 public class LabelNode extends AbstractNode {
 
 	public LabelNode(EObject grammarElement, String text, Font font) {

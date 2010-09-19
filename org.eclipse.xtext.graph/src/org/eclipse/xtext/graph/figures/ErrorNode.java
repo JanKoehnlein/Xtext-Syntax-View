@@ -5,6 +5,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 
+/**
+ * Node representing an erroneous grammar element.
+ * 
+ * @author koehnlein
+ */
 public class ErrorNode extends RectangleNode {
 
 	public ErrorNode(EObject grammarElement, String text, Font font) {

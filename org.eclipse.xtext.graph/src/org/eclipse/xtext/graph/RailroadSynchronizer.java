@@ -6,6 +6,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.xtext.Grammar;
+import org.eclipse.xtext.graph.actions.RailroadSelectionLinker;
 import org.eclipse.xtext.graph.figures.Diagram;
 import org.eclipse.xtext.graph.trafo.RailroadFactory;
 import org.eclipse.xtext.resource.XtextResource;
@@ -14,26 +15,41 @@ import org.eclipse.xtext.ui.editor.model.IXtextDocument;
 import org.eclipse.xtext.ui.editor.model.IXtextModelListener;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+/**
+ * Synchronizes the railroad diagram view with the active editor.
+ * 
+ * @author koehnlein
+ */
+@Singleton
 public class RailroadSynchronizer implements IPartListener, IXtextModelListener {
 
-	private IXtextDocument lastActiveDocument;
+	@Inject
 	private RailroadView view;
-	private Font font;
+	
+	@Inject 
+	private RailroadFactory factory;
+	
+	@Inject 
+	private RailroadSelectionLinker selectionLinker;
+	
+	private IXtextDocument lastActiveDocument;
 
-	public RailroadSynchronizer(RailroadView view) {
-		this.view = view;
-	}
+	private Font font;
 
 	@Override
 	public void partActivated(IWorkbenchPart part) {
-		updateDiagram(part);
+		updateView(part);
 	}
 
-	private void updateDiagram(IWorkbenchPart part) {
+	private void updateView(IWorkbenchPart part) {
 		if (part instanceof XtextEditor) {
 			XtextEditor xtextEditor = (XtextEditor) part;
 			IXtextDocument xtextDocument = xtextEditor.getDocument();
 			if (xtextDocument != lastActiveDocument) {
+				selectionLinker.setXtextEditor(xtextEditor);
 				final Diagram diagram = xtextDocument.readOnly(new IUnitOfWork<Diagram, XtextResource>() {
 					@Override
 					public Diagram exec(XtextResource state) throws Exception {
@@ -57,7 +73,7 @@ public class RailroadSynchronizer implements IPartListener, IXtextModelListener 
 		if (!contents.isEmpty()) {
 			EObject rootObject = contents.get(0);
 			if (rootObject instanceof Grammar)
-				return new RailroadFactory().createDiagram((Grammar) rootObject);
+				return factory.createDiagram((Grammar) rootObject);
 		}
 		return null;
 	}

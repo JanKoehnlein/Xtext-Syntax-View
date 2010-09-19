@@ -8,7 +8,12 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
 
 import com.google.common.collect.Maps;
+import com.google.inject.Singleton;
 
+/**
+ * @author koehnlein
+ */
+@Singleton
 public class RailroadConnectionRouter extends AbstractRouter {
 
 	private Map<Connection, LoopConstraint> constraints = Maps.newHashMap();

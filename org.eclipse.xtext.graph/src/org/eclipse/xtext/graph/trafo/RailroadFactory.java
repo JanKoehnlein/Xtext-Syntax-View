@@ -19,27 +19,30 @@ import org.eclipse.xtext.graph.figures.LabelNode;
 import org.eclipse.xtext.graph.figures.RectangleNode;
 import org.eclipse.xtext.graph.figures.RoundedNode;
 
+import com.google.inject.Inject;
 import com.google.inject.internal.Lists;
 
+/**
+ * Creates nodes and connections.
+ * 
+ * @author koehnlein
+ */
 public class RailroadFactory {
-	
+
+	@Inject
 	private RailroadConnectionRouter connectionRouter;
 
+	@Inject
 	private RailroadLayout layout;
 
+	@Inject
 	private RailroadTransformer transformer;
-	
-	private Font font; 
-	
-	public RailroadFactory() {
-		connectionRouter = new RailroadConnectionRouter();
-		layout = new RailroadLayout();
-		transformer = new RailroadTransformer(this);
-	}
+
+	private Font font;
 
 	protected Font getFont() {
-		if(font == null) {
-			if(Display.getCurrent() != null) {
+		if (font == null) {
+			if (Display.getCurrent() != null) {
 				font = Display.getCurrent().getSystemFont();
 			} else {
 				Display.getDefault().syncExec(new Runnable() {
@@ -52,6 +55,7 @@ public class RailroadFactory {
 		}
 		return font;
 	}
+
 	public Diagram createDiagram(Grammar grammar) {
 		Diagram diagram = new Diagram(grammar);
 		diagram.setLayoutManager(layout);
@@ -60,23 +64,24 @@ public class RailroadFactory {
 		return diagram;
 	}
 
-	public CrossPoint createNode(NodeType nodeType,
-			EObject element, String name, CrossPoint predecessor,
-			GridPointer gridPointer, Diagram diagram) {
+	public CrossPoint createNode(NodeType nodeType, EObject element,
+			String name, CrossPoint predecessor, GridPointer gridPointer,
+			Diagram diagram) {
 		CardinalityConnectionHelper helper = new CardinalityConnectionHelper(
 				this, element, diagram);
 		predecessor = helper.createEntryPoints(predecessor, gridPointer);
 		gridPointer.resetMax();
-		AbstractNode node = createNode(nodeType, element, name, gridPointer, diagram);
+		AbstractNode node = createNode(nodeType, element, name, gridPointer,
+				diagram);
 		createConnection(predecessor, node, diagram);
-		CrossPoint exitPoint = helper
-				.createAndConnectExitPoints(node, gridPointer);
+		CrossPoint exitPoint = helper.createAndConnectExitPoints(node,
+				gridPointer);
 		gridPointer.aggregate(gridPointer);
 		return exitPoint;
 	}
 
-	public AbstractNode createNode(NodeType nodeType,
-			EObject grammarElement, String name, GridPointer gridPointer, Diagram diagram) {
+	public AbstractNode createNode(NodeType nodeType, EObject grammarElement,
+			String name, GridPointer gridPointer, Diagram diagram) {
 		AbstractNode node = createNode(nodeType, grammarElement, name);
 		gridPointer.incColumn();
 		layout.setConstraint(
@@ -98,7 +103,8 @@ public class RailroadFactory {
 		return crossPoint;
 	}
 
-	public Connection createConnection(CrossPoint source, CrossPoint target, Diagram diagram) {
+	public Connection createConnection(CrossPoint source, CrossPoint target,
+			Diagram diagram) {
 		Connection connection = new Connection(source, target);
 		diagram.add(connection);
 		connection.setConnectionRouter(connectionRouter);
@@ -109,10 +115,9 @@ public class RailroadFactory {
 			CrossPoint target, GridPointer gridPointer, Diagram diagram) {
 		gridPointer.incMaxRow();
 		Connection connection = createConnection(source, target, diagram);
-		layout.setConstraint(
-				connection,
-				new RailroadLayout.Constraint(gridPointer.getMaxRow(), gridPointer
-						.getColumn(), gridPointer.getTrack()));
+		layout.setConstraint(connection,
+				new RailroadLayout.Constraint(gridPointer.getMaxRow(),
+						gridPointer.getColumn(), gridPointer.getTrack()));
 		return connection;
 	}
 
@@ -132,11 +137,13 @@ public class RailroadFactory {
 			AbstractElement e = compound.getElements().get(i);
 			subGridPointer.setColumn(startColumn);
 			GridPointer currentgridPointer = subGridPointer.clone();
-			CrossPoint subEntryPoint = createCrossPoint(currentgridPointer, diagram);
+			CrossPoint subEntryPoint = createCrossPoint(currentgridPointer,
+					diagram);
 			createConnection(entryPoint, subEntryPoint, diagram);
 			CrossPoint subPoint = transformer.transform(e, subEntryPoint,
 					currentgridPointer, diagram);
-			CrossPoint subExitPoint = createCrossPoint(currentgridPointer, diagram);
+			CrossPoint subExitPoint = createCrossPoint(currentgridPointer,
+					diagram);
 			createConnection(subPoint, subExitPoint, diagram);
 			subExitPoints.add(subExitPoint);
 			subGridPointer.aggregate(currentgridPointer);
@@ -176,16 +183,18 @@ public class RailroadFactory {
 		gridPointer.aggregate(subGridPointer);
 		return currentPredecessor;
 	}
-	
+
 	protected CrossPoint createSubTrack(AbstractElement element,
-			AbstractElement child, CrossPoint predecessor, GridPointer gridPointer, Diagram diagram) {
+			AbstractElement child, CrossPoint predecessor,
+			GridPointer gridPointer, Diagram diagram) {
 		CardinalityConnectionHelper helper = new CardinalityConnectionHelper(
 				this, element, diagram);
 		predecessor = helper.createEntryPoints(predecessor, gridPointer);
 		GridPointer subGridPointer = gridPointer.clone();
 		CrossPoint successor = transformer.transform(child, predecessor,
 				subGridPointer, diagram);
-		successor = helper.createAndConnectExitPoints(successor, subGridPointer);
+		successor = helper
+				.createAndConnectExitPoints(successor, subGridPointer);
 		gridPointer.aggregate(subGridPointer);
 		return successor;
 	}

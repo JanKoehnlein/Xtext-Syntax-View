@@ -2,44 +2,56 @@ package org.eclipse.xtext.graph;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LightweightSystem;
-import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.ScrollPane;
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.xtext.graph.actions.ExportToFileAction;
+import org.eclipse.xtext.graph.actions.LinkWithEditorAction;
+import org.eclipse.xtext.graph.actions.RailroadSelectionLinker;
 import org.eclipse.xtext.graph.figures.Diagram;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+/**
+ * A railroad diagram view for Xtext grammars.
+ * 
+ * @author koehnlein
+ */
+@Singleton
 public class RailroadView extends ViewPart {
 	public static final String ID = "org.eclipse.xtext.graph.view";
 
-	private ScrollPane scrollPane;
-
+	@Inject
 	private RailroadSynchronizer synchronizer;
 
-	private Canvas canvas;
+	@Inject
+	private RailroadSelectionProvider selectionProvider;
 
-	private IAction exportAction;
+	@Inject
+	private ExportToFileAction exportAction;
+
+	@Inject
+	private LinkWithEditorAction linkWithEditorAction;
+
+	@Inject
+	private RailroadSelectionLinker selectionLinker;
+
+	private ScrollPane scrollPane;
+
+	private Canvas canvas;
 
 	private Diagram diagram;
 
 	public RailroadView() {
-		synchronizer = new RailroadSynchronizer(this);
 	}
 
 	@Override
@@ -48,44 +60,17 @@ public class RailroadView extends ViewPart {
 		LightweightSystem lightweightSystem = new LightweightSystem(canvas);
 		scrollPane = new ScrollPane();
 		scrollPane.setScrollBarVisibility(ScrollPane.AUTOMATIC);
-		scrollPane.addMouseListener(new RailroadSelectionHelper(this));
+		scrollPane.addMouseListener(selectionProvider);
+		getSite().setSelectionProvider(selectionProvider);
 		lightweightSystem.setContents(scrollPane);
 		createActions();
 	}
 
 	private void createActions() {
-		exportAction = new Action("Export to file") {
-
-			public static final int PADDING = 20;
-
-			@Override
-			public void run() {
-				if (diagram != null) {
-					FileDialog fileDialog = new FileDialog(getSite().getShell(), SWT.SAVE);
-					fileDialog.setFilterExtensions(new String[] { "*.png" });
-					fileDialog.setText("Choose diagram file");
-					String fileName = fileDialog.open();
-					Dimension preferredSize = diagram.getPreferredSize();
-					Image image = new Image(Display.getDefault(), preferredSize.width + 2 * PADDING,
-							preferredSize.height + 2 * PADDING);
-					GC gc = new GC(image);
-					SWTGraphics graphics = new SWTGraphics(gc);
-					graphics.translate(PADDING, PADDING);
-					diagram.paint(graphics);
-					ImageData imageData = image.getImageData();
-					ImageLoader imageLoader = new ImageLoader();
-					imageLoader.data = new ImageData[] { imageData };
-					imageLoader.save(fileName, SWT.IMAGE_PNG);
-				}
-			}
-		};
-		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
-		exportAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT));
-		exportAction.setDisabledImageDescriptor(sharedImages
-				.getImageDescriptor(ISharedImages.IMG_ETOOL_SAVE_EDIT_DISABLED));
-		exportAction.setEnabled(false);
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		toolBarManager.add(exportAction);
+		toolBarManager.add(linkWithEditorAction);
+		selectionLinker.activate();
 	}
 
 	@Override
@@ -96,6 +81,7 @@ public class RailroadView extends ViewPart {
 
 	@Override
 	public void dispose() {
+		selectionLinker.deactivate();
 		getSite().getWorkbenchWindow().getPartService().addPartListener(synchronizer);
 		super.dispose();
 	}
@@ -112,8 +98,20 @@ public class RailroadView extends ViewPart {
 		exportAction.setEnabled(diagram != null);
 	}
 
+	public Diagram getDiagram() {
+		return diagram;
+	}
+
 	public IFigure findFigureAt(Point location) {
 		return scrollPane.findFigureAt(location);
+	}
+
+	public void reveal(IFigure figure) {
+		Rectangle rectangle = new Rectangle(scrollPane.getViewport().getBounds().getCopy()
+				.translate(scrollPane.getViewport().getViewLocation()));
+		if (rectangle.contains(figure.getBounds()))
+			return;
+		scrollPane.scrollTo(figure.getBounds().getLocation());
 	}
 
 	@Override

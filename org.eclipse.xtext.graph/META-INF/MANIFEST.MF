@@ -18,3 +18,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.xtext.ui.shared;bundle-version="1.0.1",
  org.eclipse.xtext.ui;bundle-version="1.0.1"
 Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.eclipse.xtext.graph.bundle.Activator

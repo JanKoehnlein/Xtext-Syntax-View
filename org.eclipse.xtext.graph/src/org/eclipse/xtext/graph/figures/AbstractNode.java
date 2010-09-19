@@ -7,9 +7,17 @@ import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.jface.text.Region;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.xtext.parsetree.CompositeNode;
+import org.eclipse.xtext.parsetree.NodeUtil;
 
+/**
+ * Base class of all nodes.
+ * 
+ * @author koehnlein
+ */
 public abstract class AbstractNode extends CrossPoint implements IGrammarElementReferer {
 
 	public static final int PADDING = 5;
@@ -18,6 +26,8 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 	private boolean isSelected = false;
 
 	private URI grammarElementURI;
+	
+	private Region textRegion;
 
 	protected AbstractNode(EObject grammarElement, String text, Font font) {
 		if (grammarElement != null)
@@ -28,6 +38,9 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 		add(label);
 		setBorder(createBorder());
 		setFont(font);
+		CompositeNode node = NodeUtil.getNode(grammarElement);
+		if(node != null) 
+			textRegion = new Region(node.getOffset(), node.getLength()); 
 	}
 
 	protected abstract Border createBorder();
@@ -59,5 +72,9 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 
 	public URI getGrammarElementURI() {
 		return grammarElementURI;
+	}
+	
+	public Region getTextRegion() {
+		return textRegion;
 	}
 }

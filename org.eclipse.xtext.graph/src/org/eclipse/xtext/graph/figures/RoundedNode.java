@@ -9,6 +9,9 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 
+/**
+ * @author koehnlein
+ */
 public class RoundedNode extends AbstractNode {
 
 	public static final int RADIUS = 7;

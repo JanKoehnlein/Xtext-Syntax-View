@@ -7,6 +7,9 @@ import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.graphics.Font;
 
+/** 
+ * @author koehnlein
+ */
 public class RectangleNode extends AbstractNode {
 
 	public RectangleNode(EObject grammarElement, String text, Font font) {

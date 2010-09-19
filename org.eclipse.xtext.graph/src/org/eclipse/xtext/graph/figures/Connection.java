@@ -7,6 +7,11 @@ import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.swt.SWT;
 
+/**
+ * A connection between two {@link CrossPoint}s.
+ * 
+ * @author koehnlein
+ */
 public class Connection extends PolylineConnection {
 
 	public Connection(CrossPoint source, CrossPoint target) {

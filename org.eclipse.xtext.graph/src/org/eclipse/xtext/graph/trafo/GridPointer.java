@@ -1,5 +1,10 @@
 package org.eclipse.xtext.graph.trafo;
 
+/**
+ * Data structure to track current positions in a grid.
+ * 
+ * @author koehnlein
+ */
 public class GridPointer {
 	private int track;
 	private int row;
