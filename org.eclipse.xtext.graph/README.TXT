@@ -1,10 +1,10 @@
 TODO:
-- Guicify 
 - layout back arrows above
 - vspace between tracks
-- link with editor
 
 DONE
+- link with editor
+- Guicify 
 - export to file action
 - fix selection highlighting
 - row of assignment cardinality conntections
