@@ -9,6 +9,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
@@ -117,6 +118,10 @@ public class RailroadView extends ViewPart {
 	@Override
 	public void setFocus() {
 		canvas.setFocus();
+	}
+	
+	public Control getControl() {
+		return canvas;
 	}
 
 }

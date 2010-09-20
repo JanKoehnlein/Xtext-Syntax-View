@@ -9,6 +9,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.IPostSelectionProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Display;
@@ -26,32 +27,36 @@ import com.google.inject.Singleton;
 @Singleton
 public class RailroadSelectionLinker implements IPropertyChangeListener {
 
+	private static final String XTEXT_LANGUAGE_NAME = "org.eclipse.xtext.Xtext";
+
 	@Inject
 	private IURIEditorOpener uriEditorOpener;
 
 	@Inject
 	private RailroadView view;
 
-	@Inject
-	private RailroadViewPreferences preferences;
+	private XtextEditor currentEditor;
 
 	private AbstractNode currentSelectedNode;
+
+	@Inject
+	private RailroadViewPreferences preferences;
 
 	private ISelectionChangedListener diagramSelectionChangeListener = new ISelectionChangedListener() {
 		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
-			diagramSelectionChanged(event);
+			if (view.getControl().isFocusControl())
+				diagramSelectionChanged(event);
 		}
 	};
 
 	private ISelectionChangedListener textSelectionChangeListener = new ISelectionChangedListener() {
 		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
-			textSelectionChanged(event);
+			if (preferences.isLinkWithEditor() && !view.getControl().isFocusControl())
+				textSelectionChanged(event);
 		}
 	};
-
-	private IPostSelectionProvider currentTextSelectionProvider;
 
 	public void activate() {
 		view.getSite().getSelectionProvider().addSelectionChangedListener(diagramSelectionChangeListener);
@@ -62,8 +67,8 @@ public class RailroadSelectionLinker implements IPropertyChangeListener {
 
 	public void deactivate() {
 		view.getSite().getSelectionProvider().removeSelectionChangedListener(diagramSelectionChangeListener);
-		if (currentTextSelectionProvider != null)
-			currentTextSelectionProvider.removePostSelectionChangedListener(textSelectionChangeListener);
+		if (currentEditor != null)
+			removeTextSelectionListener(currentEditor);
 		preferences.getPreferenceStore().removePropertyChangeListener(this);
 	}
 
@@ -114,7 +119,9 @@ public class RailroadSelectionLinker implements IPropertyChangeListener {
 					IFigure selectedFigure = (IFigure) selectedElement;
 					selectFigure(selectedFigure);
 					boolean isDoubleClick = event instanceof RailroadSelectionProvider.DoubleClickEvent;
-					if (isDoubleClick || preferences.isLinkWithEditor())
+					if ((currentEditor == null || !currentEditor.getInternalSourceViewer().getTextWidget()
+							.isFocusControl())
+							&& (isDoubleClick || preferences.isLinkWithEditor()))
 						selectGrammarText(selectedFigure, isDoubleClick);
 				}
 			}
@@ -150,11 +157,26 @@ public class RailroadSelectionLinker implements IPropertyChangeListener {
 	}
 
 	public void setXtextEditor(XtextEditor xtextEditor) {
-		if (currentTextSelectionProvider != null) {
-			currentTextSelectionProvider.removePostSelectionChangedListener(textSelectionChangeListener);
+		if (currentEditor != null) {
+			removeTextSelectionListener(currentEditor);
 		}
-		currentTextSelectionProvider = (IPostSelectionProvider) xtextEditor.getSelectionProvider();
-		currentTextSelectionProvider.addPostSelectionChangedListener(textSelectionChangeListener);
+		if (XTEXT_LANGUAGE_NAME.equals(xtextEditor.getLanguageName())) {
+			currentEditor = xtextEditor;
+			ISelectionProvider selectionProvider = xtextEditor.getSelectionProvider();
+			if (selectionProvider instanceof IPostSelectionProvider)
+				((IPostSelectionProvider) selectionProvider)
+						.addPostSelectionChangedListener(textSelectionChangeListener);
+			else
+				selectionProvider.addSelectionChangedListener(textSelectionChangeListener);
+		}
 	}
 
+	protected void removeTextSelectionListener(XtextEditor editor) {
+		ISelectionProvider selectionProvider = editor.getSelectionProvider();
+		if (selectionProvider instanceof IPostSelectionProvider)
+			((IPostSelectionProvider) selectionProvider)
+					.removePostSelectionChangedListener(textSelectionChangeListener);
+		else
+			selectionProvider.removeSelectionChangedListener(textSelectionChangeListener);
+	}
 }
