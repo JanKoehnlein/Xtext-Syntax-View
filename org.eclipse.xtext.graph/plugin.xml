@@ -5,12 +5,17 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            category="org.eclipse.ui"
+            category="org.eclipse.xtext.viewCategory"
             class="org.eclipse.xtext.graph.bundle.RailroadViewExecutableExtensionRegistry:org.eclipse.xtext.graph.RailroadView"
+            icon="icons/railroad.png"
             id="org.eclipse.xtext.graph.view"
             name="Xtext Syntax Graph"
             restorable="true">
       </view>
+      <category
+            id="org.eclipse.xtext.viewCategory"
+            name="Xtext">
+      </category>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">

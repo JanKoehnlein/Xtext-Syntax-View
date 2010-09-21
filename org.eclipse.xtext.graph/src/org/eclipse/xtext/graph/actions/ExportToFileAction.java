@@ -52,6 +52,7 @@ public class ExportToFileAction extends Action {
 			GC gc = new GC(image);
 			SWTGraphics graphics = new SWTGraphics(gc);
 			graphics.translate(PADDING, PADDING);
+			graphics.translate(diagram.getBounds().getLocation().getNegated());
 			diagram.paint(graphics);
 			ImageData imageData = image.getImageData();
 			ImageLoader imageLoader = new ImageLoader();

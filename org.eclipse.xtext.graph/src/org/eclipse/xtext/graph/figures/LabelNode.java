@@ -18,6 +18,12 @@ public class LabelNode extends AbstractNode {
 	}
 
 	@Override
+	public void setSelected(boolean isSelected) {
+		super.setSelected(isSelected);
+		setOpaque(isSelected);
+	}
+	
+	@Override
 	protected Border createBorder() {
 		return new MarginBorder(PADDING);
 	}

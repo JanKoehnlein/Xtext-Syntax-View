@@ -1,8 +1,10 @@
 TODO:
 - layout back arrows above
 - vspace between tracks
+- native scroll bars
 
 DONE
+- icon and category
 - link with editor
 - Guicify 
 - export to file action
