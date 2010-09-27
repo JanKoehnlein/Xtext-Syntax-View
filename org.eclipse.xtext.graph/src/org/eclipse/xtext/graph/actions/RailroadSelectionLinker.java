@@ -173,10 +173,12 @@ public class RailroadSelectionLinker implements IPropertyChangeListener {
 
 	protected void removeTextSelectionListener(XtextEditor editor) {
 		ISelectionProvider selectionProvider = editor.getSelectionProvider();
-		if (selectionProvider instanceof IPostSelectionProvider)
-			((IPostSelectionProvider) selectionProvider)
-					.removePostSelectionChangedListener(textSelectionChangeListener);
-		else
-			selectionProvider.removeSelectionChangedListener(textSelectionChangeListener);
+		if (selectionProvider != null) {
+			if (selectionProvider instanceof IPostSelectionProvider)
+				((IPostSelectionProvider) selectionProvider)
+						.removePostSelectionChangedListener(textSelectionChangeListener);
+			else
+				selectionProvider.removeSelectionChangedListener(textSelectionChangeListener);
+		}
 	}
 }
