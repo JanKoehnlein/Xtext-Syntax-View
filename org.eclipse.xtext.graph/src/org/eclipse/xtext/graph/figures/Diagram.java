@@ -24,7 +24,7 @@ public class Diagram extends Figure implements IGrammarElementReferer {
 	@Override
 	protected boolean useLocalCoordinates() {
 		// this is necessary to make the scrollpane work
-		return true;
+		return false;
 	}
 
 	public URI getGrammarElementURI() {

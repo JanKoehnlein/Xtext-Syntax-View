@@ -1,13 +1,13 @@
 package org.eclipse.xtext.graph;
 
+import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.LightweightSystem;
-import org.eclipse.draw2d.ScrollPane;
+import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -46,9 +46,9 @@ public class RailroadView extends ViewPart {
 	@Inject
 	private RailroadSelectionLinker selectionLinker;
 
-	private ScrollPane scrollPane;
+	private IFigure rootFigure;
 
-	private Canvas canvas;
+	private FigureCanvas canvas;
 
 	private Diagram diagram;
 
@@ -57,13 +57,13 @@ public class RailroadView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		canvas = new Canvas(parent, SWT.NONE);
-		LightweightSystem lightweightSystem = new LightweightSystem(canvas);
-		scrollPane = new ScrollPane();
-		scrollPane.setScrollBarVisibility(ScrollPane.AUTOMATIC);
-		scrollPane.addMouseListener(selectionProvider);
+		canvas = new FigureCanvas(parent, SWT.V_SCROLL | SWT.H_SCROLL);
+		rootFigure = new Figure();
+		rootFigure.addMouseListener(selectionProvider);
+		rootFigure.setLayoutManager(new StackLayout());
+		rootFigure.setVisible(true);
+		canvas.setContents(rootFigure);
 		getSite().setSelectionProvider(selectionProvider);
-		lightweightSystem.setContents(scrollPane);
 		createActions();
 	}
 
@@ -87,16 +87,19 @@ public class RailroadView extends ViewPart {
 		super.dispose();
 	}
 
-	public void setDiagram(final Diagram diagram) {
+	public void setDiagram(final Diagram newDiagram) {
 		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				scrollPane.setContents(diagram);
-				scrollPane.revalidate();
+				if (diagram != null)
+					rootFigure.remove(diagram);
+				if (newDiagram != null)
+					rootFigure.add(newDiagram);
+				rootFigure.revalidate();
 			}
 		});
-		this.diagram = diagram;
-		exportAction.setEnabled(diagram != null);
+		this.diagram = newDiagram;
+		exportAction.setEnabled(newDiagram != null);
 	}
 
 	public Diagram getDiagram() {
@@ -104,22 +107,22 @@ public class RailroadView extends ViewPart {
 	}
 
 	public IFigure findFigureAt(Point location) {
-		return scrollPane.findFigureAt(location);
+		return rootFigure.findFigureAt(location);
 	}
 
 	public void reveal(IFigure figure) {
-		Rectangle rectangle = new Rectangle(scrollPane.getViewport().getBounds().getCopy()
-				.translate(scrollPane.getViewport().getViewLocation()));
+		Rectangle rectangle = new Rectangle(canvas.getViewport().getBounds().getCopy()
+				.translate(canvas.getViewport().getViewLocation()));
 		if (rectangle.contains(figure.getBounds()))
 			return;
-		scrollPane.scrollTo(figure.getBounds().getLocation());
+		canvas.scrollSmoothTo(figure.getBounds().x, figure.getBounds().y);
 	}
 
 	@Override
 	public void setFocus() {
 		canvas.setFocus();
 	}
-	
+
 	public Control getControl() {
 		return canvas;
 	}

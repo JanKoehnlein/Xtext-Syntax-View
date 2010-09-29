@@ -10,6 +10,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.text.Region;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.xtext.parsetree.CompositeNode;
 import org.eclipse.xtext.parsetree.NodeUtil;
 
@@ -26,8 +28,10 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 	private boolean isSelected = false;
 
 	private URI grammarElementURI;
-	
+
 	private Region textRegion;
+
+	public static final Color selectionColor = new Color(null, 115, 158, 227);
 
 	protected AbstractNode(EObject grammarElement, String text, Font font) {
 		if (grammarElement != null)
@@ -39,8 +43,8 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 		setBorder(createBorder());
 		setFont(font);
 		CompositeNode node = NodeUtil.getNode(grammarElement);
-		if(node != null) 
-			textRegion = new Region(node.getOffset(), node.getLength()); 
+		if (node != null)
+			textRegion = new Region(node.getOffset(), node.getLength());
 	}
 
 	protected abstract Border createBorder();
@@ -63,7 +67,7 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 	}
 
 	protected Color getSelectedBackgroundColor() {
-		return ColorConstants.lightBlue;
+		return selectionColor;
 	}
 
 	protected Color getUnselectedBackgroundColor() {
@@ -73,8 +77,9 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 	public URI getGrammarElementURI() {
 		return grammarElementURI;
 	}
-	
+
 	public Region getTextRegion() {
 		return textRegion;
 	}
+
 }
