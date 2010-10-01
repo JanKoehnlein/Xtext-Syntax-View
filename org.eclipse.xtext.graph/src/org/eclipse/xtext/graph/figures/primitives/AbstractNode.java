@@ -1,17 +1,17 @@
-package org.eclipse.xtext.graph.figures;
+package org.eclipse.xtext.graph.figures.primitives;
 
 import org.eclipse.draw2d.Border;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.ToolbarLayout;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.text.Region;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.xtext.graph.figures.ILayoutConstants;
 import org.eclipse.xtext.parsetree.CompositeNode;
 import org.eclipse.xtext.parsetree.NodeUtil;
 
@@ -30,8 +30,6 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 	private URI grammarElementURI;
 
 	private Region textRegion;
-
-	public static final Color selectionColor = new Color(null, 115, 158, 227);
 
 	protected AbstractNode(EObject grammarElement, String text, Font font) {
 		if (grammarElement != null)
@@ -67,7 +65,7 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 	}
 
 	protected Color getSelectedBackgroundColor() {
-		return selectionColor;
+		return ILayoutConstants.NODE_SELECTION_COLOR;
 	}
 
 	protected Color getUnselectedBackgroundColor() {
@@ -82,4 +80,8 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 		return textRegion;
 	}
 
+	@Override
+	public Dimension getMaximumSize() {
+		return getPreferredSize();
+	}
 }

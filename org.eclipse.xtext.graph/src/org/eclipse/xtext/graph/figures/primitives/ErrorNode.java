@@ -1,4 +1,4 @@
-package org.eclipse.xtext.graph.figures;
+package org.eclipse.xtext.graph.figures.primitives;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.emf.ecore.EObject;

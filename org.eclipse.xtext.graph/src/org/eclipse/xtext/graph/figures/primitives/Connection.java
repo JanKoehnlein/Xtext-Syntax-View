@@ -1,10 +1,11 @@
-package org.eclipse.xtext.graph.figures;
+package org.eclipse.xtext.graph.figures.primitives;
 
 import org.eclipse.draw2d.ChopboxAnchor;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 
 /**
@@ -35,12 +36,13 @@ public class Connection extends PolylineConnection {
 		@Override
 		public Point getLocation(Point reference) {
 			IFigure owner = getOwner();
-			if (!(owner instanceof AbstractNode)) {
-				Point center = owner.getBounds().getCenter().getCopy();
-				owner.translateToAbsolute(center);
-				return center;
+			Rectangle bounds = owner.getBounds().getCopy();
+			owner.translateToAbsolute(bounds);
+			if (reference.x < bounds.getLeft().x) {
+				return bounds.getLeft();
+			} else {
+				return bounds.getRight();
 			}
-			return super.getLocation(reference);
 		}
 
 	}

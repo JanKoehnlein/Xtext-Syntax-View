@@ -1,4 +1,4 @@
-package org.eclipse.xtext.graph.trafo;
+package org.eclipse.xtext.graph.figures.primitives;
 
 /**
  * Enum for the possible types of nodes.

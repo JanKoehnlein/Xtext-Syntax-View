@@ -16,8 +16,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.xtext.graph.RailroadSelectionProvider;
 import org.eclipse.xtext.graph.RailroadView;
 import org.eclipse.xtext.graph.RailroadViewPreferences;
-import org.eclipse.xtext.graph.figures.AbstractNode;
-import org.eclipse.xtext.graph.figures.IGrammarElementReferer;
+import org.eclipse.xtext.graph.figures.primitives.AbstractNode;
+import org.eclipse.xtext.graph.figures.primitives.IGrammarElementReferer;
 import org.eclipse.xtext.ui.editor.IURIEditorOpener;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 

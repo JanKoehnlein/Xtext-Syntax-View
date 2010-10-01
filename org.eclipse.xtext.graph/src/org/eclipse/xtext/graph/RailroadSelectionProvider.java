@@ -10,8 +10,8 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.xtext.graph.figures.AbstractNode;
-import org.eclipse.xtext.graph.figures.IGrammarElementReferer;
+import org.eclipse.xtext.graph.figures.primitives.AbstractNode;
+import org.eclipse.xtext.graph.figures.primitives.IGrammarElementReferer;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;

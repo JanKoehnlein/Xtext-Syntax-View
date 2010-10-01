@@ -7,8 +7,8 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.xtext.Grammar;
 import org.eclipse.xtext.graph.actions.RailroadSelectionLinker;
-import org.eclipse.xtext.graph.figures.Diagram;
-import org.eclipse.xtext.graph.trafo.RailroadFactory;
+import org.eclipse.xtext.graph.figures.RailroadDiagram;
+import org.eclipse.xtext.graph.trafo.Xtext2RailroadTransformer;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.model.IXtextDocument;
@@ -30,7 +30,7 @@ public class RailroadSynchronizer implements IPartListener, IXtextModelListener 
 	private RailroadView view;
 	
 	@Inject 
-	private RailroadFactory factory;
+	private Xtext2RailroadTransformer transformer;
 	
 	@Inject 
 	private RailroadSelectionLinker selectionLinker;
@@ -50,9 +50,9 @@ public class RailroadSynchronizer implements IPartListener, IXtextModelListener 
 			IXtextDocument xtextDocument = xtextEditor.getDocument();
 			if (xtextDocument != lastActiveDocument) {
 				selectionLinker.setXtextEditor(xtextEditor);
-				final Diagram diagram = xtextDocument.readOnly(new IUnitOfWork<Diagram, XtextResource>() {
+				final RailroadDiagram diagram = xtextDocument.readOnly(new IUnitOfWork<RailroadDiagram, XtextResource>() {
 					@Override
-					public Diagram exec(XtextResource state) throws Exception {
+					public RailroadDiagram exec(XtextResource state) throws Exception {
 						return createDiagram(state);
 					}
 				});
@@ -68,12 +68,12 @@ public class RailroadSynchronizer implements IPartListener, IXtextModelListener 
 		}
 	}
 
-	private Diagram createDiagram(XtextResource state) {
+	private RailroadDiagram createDiagram(XtextResource state) {
 		EList<EObject> contents = state.getContents();
 		if (!contents.isEmpty()) {
 			EObject rootObject = contents.get(0);
 			if (rootObject instanceof Grammar)
-				return factory.createDiagram((Grammar) rootObject);
+				return (RailroadDiagram) transformer.transform(rootObject);
 		}
 		return null;
 	}

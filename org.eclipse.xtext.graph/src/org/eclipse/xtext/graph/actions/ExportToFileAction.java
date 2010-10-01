@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.xtext.graph.RailroadView;
-import org.eclipse.xtext.graph.figures.Diagram;
+import org.eclipse.xtext.graph.figures.RailroadDiagram;
 
 import com.google.inject.Inject;
 
@@ -40,7 +40,7 @@ public class ExportToFileAction extends Action {
 
 	@Override
 	public void run() {
-		Diagram diagram = railroadView.getDiagram();
+		RailroadDiagram diagram = railroadView.getDiagram();
 		if (diagram != null) {
 			FileDialog fileDialog = new FileDialog(this.railroadView.getSite().getShell(), SWT.SAVE);
 			fileDialog.setFilterExtensions(new String[] { "*.png" });

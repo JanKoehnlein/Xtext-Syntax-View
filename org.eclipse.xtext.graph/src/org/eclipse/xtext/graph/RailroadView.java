@@ -17,7 +17,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.xtext.graph.actions.ExportToFileAction;
 import org.eclipse.xtext.graph.actions.LinkWithEditorAction;
 import org.eclipse.xtext.graph.actions.RailroadSelectionLinker;
-import org.eclipse.xtext.graph.figures.Diagram;
+import org.eclipse.xtext.graph.figures.RailroadDiagram;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -50,7 +50,7 @@ public class RailroadView extends ViewPart {
 
 	private FigureCanvas canvas;
 
-	private Diagram diagram;
+	private RailroadDiagram diagram;
 
 	public RailroadView() {
 	}
@@ -87,7 +87,7 @@ public class RailroadView extends ViewPart {
 		super.dispose();
 	}
 
-	public void setDiagram(final Diagram newDiagram) {
+	public void setDiagram(final RailroadDiagram newDiagram) {
 		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -102,7 +102,7 @@ public class RailroadView extends ViewPart {
 		exportAction.setEnabled(newDiagram != null);
 	}
 
-	public Diagram getDiagram() {
+	public RailroadDiagram getDiagram() {
 		return diagram;
 	}
 

@@ -1,4 +1,4 @@
-package org.eclipse.xtext.graph.figures;
+package org.eclipse.xtext.graph.figures.primitives;
 
 import org.eclipse.draw2d.Border;
 import org.eclipse.draw2d.CompoundBorder;

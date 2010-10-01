@@ -1,4 +1,4 @@
-package org.eclipse.xtext.graph.figures;
+package org.eclipse.xtext.graph.figures.primitives;
 
 import org.eclipse.draw2d.Border;
 import org.eclipse.draw2d.ColorConstants;
@@ -8,13 +8,12 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.xtext.graph.figures.ILayoutConstants;
 
 /**
  * @author koehnlein
  */
 public class RoundedNode extends AbstractNode {
-
-	public static final int RADIUS = 7;
 
 	public RoundedNode(EObject grammarElement, String text, Font font) {
 		super(grammarElement, text, font);
@@ -43,7 +42,7 @@ public class RoundedNode extends AbstractNode {
 		r.width -= inset1 + inset2;
 		r.height -= inset1 + inset2;
 
-		graphics.fillRoundRectangle(r, Math.max(0, RADIUS - (int) lineInset), Math.max(0, RADIUS - (int) lineInset));
-		graphics.drawRoundRectangle(r, Math.max(0, RADIUS - (int) lineInset), Math.max(0, RADIUS - (int) lineInset));
+		graphics.fillRoundRectangle(r, Math.max(0, ILayoutConstants.ROUNDED_RECTANGLE_RADIUS - (int) lineInset), Math.max(0, ILayoutConstants.ROUNDED_RECTANGLE_RADIUS - (int) lineInset));
+		graphics.drawRoundRectangle(r, Math.max(0, ILayoutConstants.ROUNDED_RECTANGLE_RADIUS - (int) lineInset), Math.max(0, ILayoutConstants.ROUNDED_RECTANGLE_RADIUS - (int) lineInset));
 	}
 }
