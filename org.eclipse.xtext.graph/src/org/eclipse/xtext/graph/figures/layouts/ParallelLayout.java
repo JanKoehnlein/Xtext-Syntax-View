@@ -8,7 +8,8 @@ import org.eclipse.xtext.graph.figures.ISegmentFigure;
 import org.eclipse.xtext.graph.figures.ILayoutConstants;
 
 /**
- * Layouts children vertically with common entry and exit nodes to the left / right.
+ * Layouts children vertically with common entry and exit nodes to the left /
+ * right.
  * 
  * @author koehnlein
  */
@@ -19,11 +20,11 @@ public class ParallelLayout extends AbstractLayout {
 	public ParallelLayout(int hmargin) {
 		this.hmargin = hmargin;
 	}
-	
+
 	public ParallelLayout() {
 		this(0);
 	}
-	
+
 	@Override
 	public void layout(IFigure container) {
 		if (container instanceof ISegmentFigure) {
@@ -40,17 +41,18 @@ public class ParallelLayout extends AbstractLayout {
 			for (Object child : containerSegment.getChildren()) {
 				if (child instanceof ISegmentFigure) {
 					Dimension childSize = ((ISegmentFigure) child).getPreferredSize();
-					bounds.setLocation(ILayoutConstants.PARALLEL_SEGMENT_HSPACE + hmargin +(width - childSize.width) / 2, y);
+					bounds.setLocation(ILayoutConstants.PARALLEL_SEGMENT_HSPACE + hmargin + (width - childSize.width)
+							/ 2, y);
 					bounds.setSize(childSize);
 					((ISegmentFigure) child).setBounds(bounds);
 					y += childSize.height + ILayoutConstants.VSPACE;
 				}
 			}
-			y-=ILayoutConstants.VSPACE;
-			bounds.setLocation(hmargin, y / 2);
+			y = (y - ILayoutConstants.VSPACE) / 2;
+			bounds.setLocation(hmargin, y);
 			bounds.setSize(0, 0);
 			containerSegment.getEntry().setBounds(bounds);
-			bounds.setLocation(width + 2* ILayoutConstants.PARALLEL_SEGMENT_HSPACE + hmargin, y / 2);
+			bounds.setLocation(width + 2 * ILayoutConstants.PARALLEL_SEGMENT_HSPACE + hmargin, y);
 			containerSegment.getExit().setBounds(bounds);
 		}
 	}
@@ -68,8 +70,8 @@ public class ParallelLayout extends AbstractLayout {
 					height += childSize.height + ILayoutConstants.VSPACE;
 				}
 			}
-			height -=ILayoutConstants.VSPACE;
-			width +=  2*ILayoutConstants.PARALLEL_SEGMENT_HSPACE + 2*hmargin +1;
+			height -= ILayoutConstants.VSPACE;
+			width += 2 * ILayoutConstants.PARALLEL_SEGMENT_HSPACE + 2 * hmargin + 1;
 			return new Dimension(width, height);
 		}
 		return new Dimension();
