@@ -12,13 +12,13 @@ import org.eclipse.emf.ecore.EObject;
  * 
  * @author koehnlein
  */
-public class RailroadDiagram extends AbstractCompositeFigure {
+public class RailroadDiagram extends AbstractSegmentFigure {
 
-	public RailroadDiagram(EObject grammarElement, List<ICompositeFigure> children) {
+	public RailroadDiagram(EObject grammarElement, List<ISegmentFigure> children) {
 		super(grammarElement);
 		setOpaque(true);
 		setBackgroundColor(ColorConstants.white);
-		for (ICompositeFigure child : children) 
+		for (ISegmentFigure child : children) 
 			add(child);
 	}
 

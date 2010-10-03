@@ -4,8 +4,8 @@ import org.eclipse.draw2d.AbstractLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.xtext.graph.figures.ILayoutConstants;
 import org.eclipse.xtext.graph.figures.ISegmentFigure;
+import org.eclipse.xtext.graph.figures.ILayoutConstants;
 
 /**
  * Layouts children vertically with common entry and exit nodes to the left / right.

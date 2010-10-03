@@ -14,7 +14,7 @@ import org.eclipse.xtext.graph.figures.primitives.PrimitiveFigureFactory;
  * 
  * @author koehnlein
  */
-public class RailroadTrack extends AbstractCompositeFigure {
+public class RailroadTrack extends AbstractSegmentFigure {
 
 	public RailroadTrack(AbstractRule rule, String name, ISegmentFigure body, PrimitiveFigureFactory primitiveFactory) {
 		super(rule);

@@ -2,6 +2,11 @@ package org.eclipse.xtext.graph.figures;
 
 import org.eclipse.swt.graphics.Color;
 
+/**
+ * All constants used for layouting and rendering.
+ * @author koehnlein
+ *
+ */
 public interface ILayoutConstants {
 
 	int HSPACE = 10;

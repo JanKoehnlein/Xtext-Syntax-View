@@ -13,7 +13,6 @@ import org.eclipse.xtext.Keyword;
 import org.eclipse.xtext.ParserRule;
 import org.eclipse.xtext.RuleCall;
 import org.eclipse.xtext.UnorderedGroup;
-import org.eclipse.xtext.graph.figures.ICompositeFigure;
 import org.eclipse.xtext.graph.figures.ISegmentFigure;
 import org.eclipse.xtext.util.PolymorphicDispatcher;
 
@@ -28,11 +27,11 @@ import com.google.inject.Inject;
  */
 public class Xtext2RailroadTransformer {
 
-	private PolymorphicDispatcher<ICompositeFigure> transformer = new PolymorphicDispatcher<ICompositeFigure>(
+	private PolymorphicDispatcher<ISegmentFigure> transformer = new PolymorphicDispatcher<ISegmentFigure>(
 			"transformInternal", 1, 1, Collections.singletonList(this),
-			new PolymorphicDispatcher.ErrorHandler<ICompositeFigure>() {
+			new PolymorphicDispatcher.ErrorHandler<ISegmentFigure>() {
 				@Override
-				public ICompositeFigure handle(Object[] params, Throwable throwable) {
+				public ISegmentFigure handle(Object[] params, Throwable throwable) {
 					EObject grammarElement = (params[0] instanceof EObject) ? (EObject) params[0] : null;
 					return factory.createNodeSegment(grammarElement, throwable);
 				}
@@ -41,74 +40,65 @@ public class Xtext2RailroadTransformer {
 	@Inject
 	private Xtext2RailroadFactory factory;
 
-	public ICompositeFigure transform(EObject object) {
+	public ISegmentFigure transform(EObject object) {
 		return transformer.invoke(object);
 	}
 
-	protected ICompositeFigure transformInternal(Grammar grammar) {
-		List<ICompositeFigure> children = transformChildren(grammar.getRules());
-		ICompositeFigure diagram = factory.createDiagram(grammar, children);
+	protected ISegmentFigure transformInternal(Grammar grammar) {
+		List<ISegmentFigure> children = transformChildren(grammar.getRules());
+		ISegmentFigure diagram = factory.createDiagram(grammar, children);
 		return diagram;
 	}
 
-	protected ICompositeFigure transformInternal(ParserRule parserRule) {
+	protected ISegmentFigure transformInternal(ParserRule parserRule) {
 		ISegmentFigure body = (ISegmentFigure) transform(parserRule.getAlternatives());
-		ICompositeFigure track = factory.createTrack(parserRule, body);
+		ISegmentFigure track = factory.createTrack(parserRule, body);
 		return track;
 	}
 
-	protected ICompositeFigure transformInternal(EObject eObject) {
+	protected ISegmentFigure transformInternal(EObject eObject) {
 		return null;
 	}
 
-	protected ICompositeFigure transformInternal(Alternatives alternatives) {
-		List<ISegmentFigure> children = transformChildrenToSegments(alternatives.getElements());
+	protected ISegmentFigure transformInternal(Alternatives alternatives) {
+		List<ISegmentFigure> children = transformChildren(alternatives.getElements());
 		return factory.createParallel(alternatives, children);
 	}
 
-	protected ICompositeFigure transformInternal(Group group) {
-		List<ISegmentFigure> children = transformChildrenToSegments(group.getElements());
+	protected ISegmentFigure transformInternal(Group group) {
+		List<ISegmentFigure> children = transformChildren(group.getElements());
 		return factory.createSequence(group, children);
 	}
 
-	protected ICompositeFigure transformInternal(UnorderedGroup unorderedGroup) {
-		List<ISegmentFigure> children = transformChildrenToSegments(unorderedGroup.getElements());
+	protected ISegmentFigure transformInternal(UnorderedGroup unorderedGroup) {
+		List<ISegmentFigure> children = transformChildren(unorderedGroup.getElements());
 		return factory.createParallel(unorderedGroup, children);
 	}
 
-	protected ICompositeFigure transformInternal(Keyword keyword) {
+	protected ISegmentFigure transformInternal(Keyword keyword) {
 		return factory.createNodeSegment(keyword);
 	}
 
-	protected ICompositeFigure transformInternal(RuleCall ruleCall) {
+	protected ISegmentFigure transformInternal(RuleCall ruleCall) {
 		return factory.createNodeSegment(ruleCall);
 	}
 
-	protected ICompositeFigure transformInternal(Assignment assignment) {
+	protected ISegmentFigure transformInternal(Assignment assignment) {
 		return transform(assignment.getTerminal());
 	}
 
-	protected ICompositeFigure transformInternal(CrossReference crossReference) {
+	protected ISegmentFigure transformInternal(CrossReference crossReference) {
 		return transform(crossReference.getTerminal());
 	}
 
-	private List<ICompositeFigure> transformChildren(List<? extends EObject> children) {
-		List<ICompositeFigure> transformedChildren = Lists.newArrayList();
+	private List<ISegmentFigure> transformChildren(List<? extends EObject> children) {
+		List<ISegmentFigure> transformedChildren = Lists.newArrayList();
 		for (EObject child : children) {
-			ICompositeFigure transformedChild = transform(child);
+			ISegmentFigure transformedChild = transform(child);
 			if (transformedChild != null)
 				transformedChildren.add(transformedChild);
 		}
 		return transformedChildren;
 	}
 
-	private List<ISegmentFigure> transformChildrenToSegments(List<? extends EObject> children) {
-		List<ISegmentFigure> transformedChildren = Lists.newArrayList();
-		for (EObject child : children) {
-			ICompositeFigure transformedChild = transform(child);
-			if (transformedChild instanceof ISegmentFigure)
-				transformedChildren.add((ISegmentFigure) transformedChild);
-		}
-		return transformedChildren;
-	}
 }
