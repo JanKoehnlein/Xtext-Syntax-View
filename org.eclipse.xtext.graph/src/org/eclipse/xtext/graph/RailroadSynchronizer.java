@@ -1,13 +1,12 @@
 package org.eclipse.xtext.graph;
 
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.xtext.Grammar;
 import org.eclipse.xtext.graph.actions.RailroadSelectionLinker;
-import org.eclipse.xtext.graph.figures.RailroadDiagram;
 import org.eclipse.xtext.graph.trafo.Xtext2RailroadTransformer;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.ui.editor.XtextEditor;
@@ -39,7 +38,6 @@ public class RailroadSynchronizer implements IPartListener, IXtextModelListener 
 
 	private Font font;
 
-	@Override
 	public void partActivated(IWorkbenchPart part) {
 		updateView(part);
 	}
@@ -50,14 +48,13 @@ public class RailroadSynchronizer implements IPartListener, IXtextModelListener 
 			IXtextDocument xtextDocument = xtextEditor.getDocument();
 			if (xtextDocument != lastActiveDocument) {
 				selectionLinker.setXtextEditor(xtextEditor);
-				final RailroadDiagram diagram = xtextDocument.readOnly(new IUnitOfWork<RailroadDiagram, XtextResource>() {
-					@Override
-					public RailroadDiagram exec(XtextResource state) throws Exception {
-						return createDiagram(state);
+				final IFigure contents = xtextDocument.readOnly(new IUnitOfWork<IFigure, XtextResource>() {
+					public IFigure exec(XtextResource resource) throws Exception {
+						return createFigure(resource);
 					}
 				});
-				if (diagram != null) {
-					view.setDiagram(diagram);
+				if (contents != null) {
+					view.setContents(contents);
 					if (lastActiveDocument != null) {
 						lastActiveDocument.removeModelListener(this);
 					}
@@ -68,35 +65,29 @@ public class RailroadSynchronizer implements IPartListener, IXtextModelListener 
 		}
 	}
 
-	private RailroadDiagram createDiagram(XtextResource state) {
+	private IFigure createFigure(XtextResource state) {
 		EList<EObject> contents = state.getContents();
 		if (!contents.isEmpty()) {
 			EObject rootObject = contents.get(0);
-			if (rootObject instanceof Grammar)
-				return (RailroadDiagram) transformer.transform(rootObject);
+			return transformer.transform(rootObject);
 		}
 		return null;
 	}
 
-	@Override
 	public void partBroughtToTop(IWorkbenchPart part) {
 	}
 
-	@Override
 	public void partClosed(IWorkbenchPart part) {
 	}
 
-	@Override
 	public void partDeactivated(IWorkbenchPart part) {
 	}
 
-	@Override
 	public void partOpened(IWorkbenchPart part) {
 	}
 
-	@Override
 	public void modelChanged(XtextResource resource) {
-		view.setDiagram(createDiagram(resource));
+		view.setContents(createFigure(resource));
 	}
 
 	public Font getFont() {

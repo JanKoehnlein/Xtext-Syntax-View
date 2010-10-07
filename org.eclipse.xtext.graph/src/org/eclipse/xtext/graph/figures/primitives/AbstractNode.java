@@ -11,16 +11,16 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.text.Region;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.xtext.graph.figures.IEObjectReferer;
 import org.eclipse.xtext.graph.figures.ILayoutConstants;
-import org.eclipse.xtext.parsetree.CompositeNode;
-import org.eclipse.xtext.parsetree.NodeUtil;
+import org.eclipse.xtext.graph.figures.ISelectable;
 
 /**
  * Base class of all nodes.
  * 
  * @author koehnlein
  */
-public abstract class AbstractNode extends CrossPoint implements IGrammarElementReferer {
+public abstract class AbstractNode extends CrossPoint implements IEObjectReferer, ISelectable {
 
 	public static final int PADDING = 5;
 
@@ -31,18 +31,16 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 
 	private Region textRegion;
 
-	protected AbstractNode(EObject grammarElement, String text, Font font) {
-		if (grammarElement != null)
-			grammarElementURI = EcoreUtil.getURI(grammarElement);
+	protected AbstractNode(EObject eObject, String text, Font font, Region textRegion) {
+		if (eObject != null)
+			grammarElementURI = EcoreUtil.getURI(eObject);
 		setLayoutManager(new ToolbarLayout());
 		setBackgroundColor(getUnselectedBackgroundColor());
 		label = new Label(text);
 		add(label);
 		setBorder(createBorder());
 		setFont(font);
-		CompositeNode node = NodeUtil.getNode(grammarElement);
-		if (node != null)
-			textRegion = new Region(node.getOffset(), node.getLength());
+		this.textRegion = textRegion;
 	}
 
 	protected abstract Border createBorder();
@@ -72,7 +70,7 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 		return ColorConstants.buttonLightest;
 	}
 
-	public URI getGrammarElementURI() {
+	public URI getEObjectURI() {
 		return grammarElementURI;
 	}
 
@@ -83,5 +81,9 @@ public abstract class AbstractNode extends CrossPoint implements IGrammarElement
 	@Override
 	public Dimension getMaximumSize() {
 		return getPreferredSize();
+	}
+	
+	public boolean isSelectable() {
+		return true;
 	}
 }

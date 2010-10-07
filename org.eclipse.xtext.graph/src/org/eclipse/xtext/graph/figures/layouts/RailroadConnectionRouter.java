@@ -17,16 +17,11 @@ import com.google.inject.Singleton;
 @Singleton
 public class RailroadConnectionRouter extends AbstractRouter {
 
-	public static BendConstraint CONCAVE_START = new BendConstraint(true, false);
-	public static BendConstraint CONCAVE_END = new BendConstraint(false, false);
-	public static BendConstraint CONVEX_START = new BendConstraint(true, true);
-	public static BendConstraint CONVEX_END = new BendConstraint(false, true);
-
 	public static class BendConstraint {
 		private boolean isStart = false;
 		private boolean isConvex = false;
 
-		private BendConstraint(boolean isStart, boolean isConvex) {
+		public BendConstraint(boolean isStart, boolean isConvex) {
 			this.isStart = isStart;
 			this.isConvex = isConvex;
 		}
@@ -42,7 +37,6 @@ public class RailroadConnectionRouter extends AbstractRouter {
 
 	private Map<Connection, BendConstraint> constraints = Maps.newHashMap();
 
-	@Override
 	public void route(Connection connection) {
 		PointList points = connection.getPoints();
 		points.removeAllPoints();

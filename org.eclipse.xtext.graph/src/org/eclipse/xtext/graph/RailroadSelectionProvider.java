@@ -10,8 +10,8 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.xtext.graph.figures.primitives.AbstractNode;
-import org.eclipse.xtext.graph.figures.primitives.IGrammarElementReferer;
+import org.eclipse.xtext.graph.figures.IEObjectReferer;
+import org.eclipse.xtext.graph.figures.ISelectable;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -39,64 +39,57 @@ public class RailroadSelectionProvider implements MouseListener, ISelectionProvi
 
 	private IFigure currentSelectedFigure;
 
-	@Override
 	public void mousePressed(MouseEvent me) {
 		setSelection(me, false);
 	}
 
-	@Override
 	public void mouseReleased(MouseEvent me) {
 		// do nothing
 	}
 
-	@Override
 	public void mouseDoubleClicked(MouseEvent me) {
 		setSelection(me, true);
 	}
 
 	protected void setSelection(MouseEvent me, boolean isDoubleClick) {
 		IFigure selectedFigure = view.findFigureAt(me.getLocation());
-		while (selectedFigure != null && !(selectedFigure instanceof IGrammarElementReferer))
+		while (selectedFigure != null && !(selectedFigure instanceof IEObjectReferer))
 			selectedFigure = selectedFigure.getParent();
 		if (selectedFigure != null) {
 			setSelection(new StructuredSelection(selectedFigure), isDoubleClick);
 		}
 	}
 
-	@Override
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionListeners.add(listener);
 	}
 
-	@Override
 	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionListeners.remove(listener);
 	}
 
-	@Override
 	public ISelection getSelection() {
-		if(currentSelectedFigure != null) 
+		if (currentSelectedFigure != null)
 			return new StructuredSelection(currentSelectedFigure);
-		else 
+		else
 			return StructuredSelection.EMPTY;
 	}
 
 	protected void setSelection(ISelection selection, boolean isDoubleClick) {
 		IFigure selectedFigure = getSelectedFigure(selection);
-		if(currentSelectedFigure != null && currentSelectedFigure instanceof AbstractNode) {
-			((AbstractNode)currentSelectedFigure).setSelected(false);
+		if (currentSelectedFigure instanceof ISelectable) {
+			((ISelectable) currentSelectedFigure).setSelected(false);
 		}
 		currentSelectedFigure = selectedFigure;
-		if (selectedFigure instanceof AbstractNode) {
-			((AbstractNode) selectedFigure).setSelected(true);
+		if (selectedFigure instanceof ISelectable) {
+			((ISelectable) selectedFigure).setSelected(true);
 		}
 		SelectionChangedEvent event = isDoubleClick ? new DoubleClickEvent(this, selection)
-					: new SelectionChangedEvent(this, selection);
+				: new SelectionChangedEvent(this, selection);
 		for (Object listener : selectionListeners.getListeners())
 			((ISelectionChangedListener) listener).selectionChanged(event);
 	}
 
-	@Override
 	public void setSelection(ISelection selection) {
 		setSelection(selection, false);
 	}

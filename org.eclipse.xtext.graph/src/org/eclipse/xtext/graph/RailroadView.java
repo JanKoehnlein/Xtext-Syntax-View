@@ -4,6 +4,7 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.StackLayout;
+import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.IToolBarManager;
@@ -17,7 +18,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.xtext.graph.actions.ExportToFileAction;
 import org.eclipse.xtext.graph.actions.LinkWithEditorAction;
 import org.eclipse.xtext.graph.actions.RailroadSelectionLinker;
-import org.eclipse.xtext.graph.figures.RailroadDiagram;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -50,7 +50,7 @@ public class RailroadView extends ViewPart {
 
 	private FigureCanvas canvas;
 
-	private RailroadDiagram diagram;
+	private IFigure contents;
 
 	public RailroadView() {
 	}
@@ -87,23 +87,22 @@ public class RailroadView extends ViewPart {
 		super.dispose();
 	}
 
-	public void setDiagram(final RailroadDiagram newDiagram) {
+	public void setContents(final IFigure newContents) {
 		Display.getDefault().syncExec(new Runnable() {
-			@Override
 			public void run() {
-				if (diagram != null)
-					rootFigure.remove(diagram);
-				if (newDiagram != null)
-					rootFigure.add(newDiagram);
+				if (contents != null)
+					rootFigure.remove(contents);
+				if (newContents != null)
+					rootFigure.add(newContents);
 				rootFigure.revalidate();
 			}
 		});
-		this.diagram = newDiagram;
-		exportAction.setEnabled(newDiagram != null);
+		this.contents = newContents;
+		exportAction.setEnabled(newContents != null);
 	}
 
-	public RailroadDiagram getDiagram() {
-		return diagram;
+	public IFigure getContents() {
+		return contents;
 	}
 
 	public IFigure findFigureAt(Point location) {
@@ -111,11 +110,14 @@ public class RailroadView extends ViewPart {
 	}
 
 	public void reveal(IFigure figure) {
-		Rectangle rectangle = new Rectangle(canvas.getViewport().getBounds().getCopy()
-				.translate(canvas.getViewport().getViewLocation()));
-		if (rectangle.contains(figure.getBounds()))
-			return;
-		canvas.scrollSmoothTo(figure.getBounds().x, figure.getBounds().y);
+		Viewport viewport = canvas.getViewport();
+		Rectangle viewportBounds = viewport.getBounds().getCopy();
+		viewportBounds.translate(viewport.getViewLocation());
+		Rectangle figureBounds = figure.getBounds().getCopy();
+		figure.translateToAbsolute(figureBounds);
+		figureBounds.translate(viewport.getViewLocation());
+		if (!viewportBounds.contains(figureBounds))
+			canvas.scrollSmoothTo(figureBounds.x, figureBounds.y);
 	}
 
 	@Override

@@ -24,7 +24,6 @@ public class SequenceLayout extends AbstractLayout {
 		this(0);
 	}
 
-	@Override
 	public void layout(IFigure container) {
 		int height = minHeight;
 		for (Object child : container.getChildren()) {

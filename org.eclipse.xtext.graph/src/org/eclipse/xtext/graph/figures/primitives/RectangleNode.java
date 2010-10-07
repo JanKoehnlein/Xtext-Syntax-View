@@ -5,6 +5,7 @@ import org.eclipse.draw2d.CompoundBorder;
 import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.text.Region;
 import org.eclipse.swt.graphics.Font;
 
 /** 
@@ -12,8 +13,8 @@ import org.eclipse.swt.graphics.Font;
  */
 public class RectangleNode extends AbstractNode {
 
-	public RectangleNode(EObject grammarElement, String text, Font font) {
-		super(grammarElement, text, font);
+	public RectangleNode(EObject eObject, String text, Font font, Region textRegion) {
+		super(eObject, text, font, textRegion);
 		setOpaque(true);
 	}
 

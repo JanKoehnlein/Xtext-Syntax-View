@@ -13,8 +13,8 @@ import org.eclipse.xtext.graph.figures.primitives.PrimitiveFigureFactory;
  */
 public class CrossPointSegment extends AbstractSegmentFigure {
 
-	public CrossPointSegment(EObject grammarElement, PrimitiveFigureFactory primitiveFactory) {
-		super(grammarElement);
+	public CrossPointSegment(EObject eObject, PrimitiveFigureFactory primitiveFactory) {
+		super(eObject);
 		CrossPoint crossPoint = primitiveFactory.createCrossPoint(this);
 		setEntry(crossPoint);
 		setExit(crossPoint);

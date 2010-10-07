@@ -15,8 +15,8 @@ import org.eclipse.xtext.graph.figures.primitives.PrimitiveFigureFactory;
  */
 public class SequenceSegment extends AbstractSegmentFigure {
 
-	public SequenceSegment(EObject element, List<ISegmentFigure> body, PrimitiveFigureFactory primitiveFactory) {
-		super(element);
+	public SequenceSegment(EObject eObject, List<ISegmentFigure> body, PrimitiveFigureFactory primitiveFactory) {
+		super(eObject);
 		if (body.isEmpty()) {
 			setEntry(primitiveFactory.createCrossPoint(this));
 			setExit(getEntry());

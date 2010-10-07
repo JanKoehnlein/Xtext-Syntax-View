@@ -25,7 +25,6 @@ public class ParallelLayout extends AbstractLayout {
 		this(0);
 	}
 
-	@Override
 	public void layout(IFigure container) {
 		if (container instanceof ISegmentFigure) {
 			ISegmentFigure containerSegment = (ISegmentFigure) container;

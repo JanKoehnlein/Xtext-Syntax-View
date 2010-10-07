@@ -6,6 +6,7 @@ import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.text.Region;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.xtext.graph.figures.ILayoutConstants;
@@ -15,8 +16,8 @@ import org.eclipse.xtext.graph.figures.ILayoutConstants;
  */
 public class RoundedNode extends AbstractNode {
 
-	public RoundedNode(EObject grammarElement, String text, Font font) {
-		super(grammarElement, text, font);
+	public RoundedNode(EObject eObject, String text, Font font, Region textRegion) {
+		super(eObject, text, font, textRegion);
 		setOpaque(true);
 	}
 

@@ -14,8 +14,8 @@ import org.eclipse.emf.ecore.EObject;
  */
 public class RailroadDiagram extends AbstractSegmentFigure {
 
-	public RailroadDiagram(EObject grammarElement, List<ISegmentFigure> children) {
-		super(grammarElement);
+	public RailroadDiagram(EObject eObject, List<ISegmentFigure> children) {
+		super(eObject);
 		setOpaque(true);
 		setBackgroundColor(ColorConstants.white);
 		for (ISegmentFigure child : children) 
@@ -27,6 +27,11 @@ public class RailroadDiagram extends AbstractSegmentFigure {
 		ToolbarLayout layout = new ToolbarLayout();
 		layout.setSpacing(ILayoutConstants.VSPACE_BETWEEN_TRACKS);
 		return layout;
+	}
+	
+	@Override
+	protected boolean useLocalCoordinates() {
+		return false;
 	}
 	
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.graph.figures.layouts.ParallelLayout;
-import org.eclipse.xtext.graph.figures.layouts.RailroadConnectionRouter;
 import org.eclipse.xtext.graph.figures.primitives.PrimitiveFigureFactory;
 
 /**
@@ -24,8 +23,8 @@ public class ParallelSegment extends AbstractSegmentFigure {
 			setExit(primitiveFactory.createCrossPoint(this));
 			for (ISegmentFigure child : children) {
 				add(child);
-				primitiveFactory.createConnection(getEntry(), child.getEntry(), this, RailroadConnectionRouter.CONCAVE_START);
-				primitiveFactory.createConnection(child.getExit(), getExit(), this, RailroadConnectionRouter.CONCAVE_END);
+				primitiveFactory.createConnection(getEntry(), child.getEntry(), this, ILayoutConstants.CONCAVE_START);
+				primitiveFactory.createConnection(child.getExit(), getExit(), this, ILayoutConstants.CONCAVE_END);
 			}
 		}
 	}

@@ -1,7 +1,8 @@
 package org.eclipse.xtext.graph.figures;
 
 import org.eclipse.draw2d.LayoutManager;
-import org.eclipse.xtext.AbstractRule;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.text.Region;
 import org.eclipse.xtext.graph.figures.layouts.SequenceLayout;
 import org.eclipse.xtext.graph.figures.primitives.AbstractNode;
 import org.eclipse.xtext.graph.figures.primitives.CrossPoint;
@@ -16,9 +17,10 @@ import org.eclipse.xtext.graph.figures.primitives.PrimitiveFigureFactory;
  */
 public class RailroadTrack extends AbstractSegmentFigure {
 
-	public RailroadTrack(AbstractRule rule, String name, ISegmentFigure body, PrimitiveFigureFactory primitiveFactory) {
-		super(rule);
-		AbstractNode label = primitiveFactory.createNode(NodeType.LABEL, rule, name, this);
+	public RailroadTrack(EObject eObject, String name, ISegmentFigure body, PrimitiveFigureFactory primitiveFactory,
+			Region textRegion) {
+		super(eObject);
+		AbstractNode label = primitiveFactory.createNode(NodeType.LABEL, eObject, name, this, textRegion);
 		if (body != null)
 			add(body);
 		CrossPoint exit = primitiveFactory.createCrossPoint(this);

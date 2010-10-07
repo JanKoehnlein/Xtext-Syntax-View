@@ -16,8 +16,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.xtext.graph.RailroadSelectionProvider;
 import org.eclipse.xtext.graph.RailroadView;
 import org.eclipse.xtext.graph.RailroadViewPreferences;
-import org.eclipse.xtext.graph.figures.primitives.AbstractNode;
-import org.eclipse.xtext.graph.figures.primitives.IGrammarElementReferer;
+import org.eclipse.xtext.graph.figures.IEObjectReferer;
+import org.eclipse.xtext.graph.figures.ISelectable;
 import org.eclipse.xtext.ui.editor.IURIEditorOpener;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 
@@ -37,13 +37,12 @@ public class RailroadSelectionLinker implements IPropertyChangeListener {
 
 	private XtextEditor currentEditor;
 
-	private AbstractNode currentSelectedNode;
+	private ISelectable currentSelectedNode;
 
 	@Inject
 	private RailroadViewPreferences preferences;
 
 	private ISelectionChangedListener diagramSelectionChangeListener = new ISelectionChangedListener() {
-		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
 			if (view.getControl().isFocusControl())
 				diagramSelectionChanged(event);
@@ -51,9 +50,8 @@ public class RailroadSelectionLinker implements IPropertyChangeListener {
 	};
 
 	private ISelectionChangedListener textSelectionChangeListener = new ISelectionChangedListener() {
-		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
-			if (preferences.isLinkWithEditor() && !view.getControl().isFocusControl())
+			if (preferences.isLinkWithEditor() && view.getSite().getPage().getActivePart() != view)
 				textSelectionChanged(event);
 		}
 	};
@@ -73,14 +71,14 @@ public class RailroadSelectionLinker implements IPropertyChangeListener {
 	}
 
 	protected void selectFigure(IFigure selectedFigure) {
-		while (selectedFigure != null && !(selectedFigure instanceof IGrammarElementReferer))
+		while (selectedFigure != null && !(selectedFigure instanceof IEObjectReferer))
 			selectedFigure = selectedFigure.getParent();
 		if (selectedFigure != null) {
 			if (currentSelectedNode != null)
 				currentSelectedNode.setSelected(false);
-			if (selectedFigure instanceof AbstractNode) {
-				((AbstractNode) selectedFigure).setSelected(true);
-				currentSelectedNode = (AbstractNode) selectedFigure;
+			if (selectedFigure instanceof ISelectable) {
+				((ISelectable) selectedFigure).setSelected(true);
+				currentSelectedNode = (ISelectable) selectedFigure;
 			} else {
 				currentSelectedNode = null;
 			}
@@ -89,14 +87,13 @@ public class RailroadSelectionLinker implements IPropertyChangeListener {
 
 	protected void selectGrammarText(IFigure selectedFigure, boolean isActivateEditor) {
 		if (selectedFigure != null) {
-			IGrammarElementReferer element = (IGrammarElementReferer) selectedFigure;
-			final URI grammarElementURI = element.getGrammarElementURI();
+			IEObjectReferer element = (IEObjectReferer) selectedFigure;
+			final URI grammarElementURI = element.getEObjectURI();
 			if (grammarElementURI != null) {
-				final boolean isSelectElement = selectedFigure instanceof AbstractNode;
+				final boolean isSelectElement = selectedFigure instanceof ISelectable;
 				// enqueue to make sure the diagram is updated before
 				if (isActivateEditor && isSelectElement) {
 					Display.getDefault().asyncExec(new Runnable() {
-						@Override
 						public void run() {
 							uriEditorOpener.open(grammarElementURI, isSelectElement);
 						}
@@ -133,21 +130,32 @@ public class RailroadSelectionLinker implements IPropertyChangeListener {
 		if (selection instanceof ITextSelection && !selection.isEmpty()) {
 			ITextSelection textSelection = (ITextSelection) selection;
 			int offset = textSelection.getOffset();
-			for (Object child : view.getDiagram().getChildren()) {
-				if (child instanceof AbstractNode) {
-					AbstractNode childNode = (AbstractNode) child;
-					Region textRegion = childNode.getTextRegion();
-					if (textRegion != null && textRegion.getOffset() <= offset
-							&& textRegion.getOffset() + textRegion.getLength() >= offset) {
-						selectFigure(childNode);
-						view.reveal(childNode);
-					}
-				}
+			IFigure figureToBeSelected = findFigureForTextOffset(view.getContents(), offset, null);
+			if (figureToBeSelected != null) {
+				selectFigure(figureToBeSelected);
+				view.reveal(figureToBeSelected);
 			}
 		}
 	}
 
-	@Override
+	protected ISelectable findFigureForTextOffset(IFigure figure, int offset, ISelectable currentBestFigure) {
+		if (figure instanceof ISelectable) {
+			Region textRegion = ((ISelectable) figure).getTextRegion();
+			if (textRegion != null && textRegion.getOffset() <= offset
+					&& textRegion.getOffset() + textRegion.getLength() >= offset) {
+				if(currentBestFigure == null || currentBestFigure.getTextRegion().getLength() > textRegion.getLength()) {
+					currentBestFigure = (ISelectable) figure;
+				}
+			}
+		}
+		for (Object child : figure.getChildren()) {
+			if (child instanceof IFigure) {
+				currentBestFigure = findFigureForTextOffset((IFigure) child, offset, currentBestFigure);
+			}
+		}
+		return currentBestFigure;
+	}
+
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(RailroadViewPreferences.LINK_WITH_EDITOR_KEY)
 				&& event.getNewValue() == Boolean.TRUE) {

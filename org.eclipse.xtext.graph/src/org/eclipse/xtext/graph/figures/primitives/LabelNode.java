@@ -3,6 +3,7 @@ package org.eclipse.xtext.graph.figures.primitives;
 import org.eclipse.draw2d.Border;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.text.Region;
 import org.eclipse.swt.graphics.Font;
 
 /**
@@ -12,8 +13,8 @@ import org.eclipse.swt.graphics.Font;
  */
 public class LabelNode extends AbstractNode {
 
-	public LabelNode(EObject grammarElement, String text, Font font) {
-		super(grammarElement, text, font);
+	public LabelNode(EObject eObject, String text, Font font, Region textRegion) {
+		super(eObject, text, font, textRegion);
 		setOpaque(false);
 	}
 
@@ -27,4 +28,5 @@ public class LabelNode extends AbstractNode {
 	protected Border createBorder() {
 		return new MarginBorder(PADDING);
 	}
+
 }

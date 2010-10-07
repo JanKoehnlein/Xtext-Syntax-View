@@ -1,5 +1,6 @@
 package org.eclipse.xtext.graph.actions;
 
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.action.Action;
@@ -13,7 +14,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.xtext.graph.RailroadView;
-import org.eclipse.xtext.graph.figures.RailroadDiagram;
 
 import com.google.inject.Inject;
 
@@ -40,20 +40,20 @@ public class ExportToFileAction extends Action {
 
 	@Override
 	public void run() {
-		RailroadDiagram diagram = railroadView.getDiagram();
-		if (diagram != null) {
+		IFigure contents = railroadView.getContents();
+		if (contents != null) {
 			FileDialog fileDialog = new FileDialog(this.railroadView.getSite().getShell(), SWT.SAVE);
 			fileDialog.setFilterExtensions(new String[] { "*.png" });
 			fileDialog.setText("Choose diagram file");
 			String fileName = fileDialog.open();
-			Dimension preferredSize = diagram.getPreferredSize();
+			Dimension preferredSize = contents.getPreferredSize();
 			Image image = new Image(Display.getDefault(), preferredSize.width + 2 * PADDING, preferredSize.height + 2
 					* PADDING);
 			GC gc = new GC(image);
 			SWTGraphics graphics = new SWTGraphics(gc);
 			graphics.translate(PADDING, PADDING);
-			graphics.translate(diagram.getBounds().getLocation().getNegated());
-			diagram.paint(graphics);
+			graphics.translate(contents.getBounds().getLocation().getNegated());
+			contents.paint(graphics);
 			ImageData imageData = image.getImageData();
 			ImageLoader imageLoader = new ImageLoader();
 			imageLoader.data = new ImageData[] { imageData };

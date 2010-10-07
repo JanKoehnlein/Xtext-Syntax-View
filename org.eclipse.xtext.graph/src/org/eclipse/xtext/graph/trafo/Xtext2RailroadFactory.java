@@ -3,6 +3,7 @@ package org.eclipse.xtext.graph.trafo;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.text.Region;
 import org.eclipse.xtext.AbstractElement;
 import org.eclipse.xtext.AbstractRule;
 import org.eclipse.xtext.Alternatives;
@@ -22,11 +23,14 @@ import org.eclipse.xtext.graph.figures.RailroadTrack;
 import org.eclipse.xtext.graph.figures.SequenceSegment;
 import org.eclipse.xtext.graph.figures.primitives.NodeType;
 import org.eclipse.xtext.graph.figures.primitives.PrimitiveFigureFactory;
+import org.eclipse.xtext.parsetree.CompositeNode;
+import org.eclipse.xtext.parsetree.NodeUtil;
 
 import com.google.inject.Inject;
 
 /**
- * Creates railrowad {@link ISegmentFigure}s and {@link ISegmentFigure}s for Xtext artifacts. 
+ * Creates railrowad {@link ISegmentFigure}s and {@link ISegmentFigure}s for
+ * Xtext artifacts.
  * 
  * @author koehnlein
  */
@@ -36,22 +40,23 @@ public class Xtext2RailroadFactory {
 	private PrimitiveFigureFactory primitiveFactory;
 
 	public ISegmentFigure createNodeSegment(Keyword keyword) {
-		NodeSegment nodeSegment = new NodeSegment(keyword, NodeType.RECTANGLE, keyword.getValue(), primitiveFactory);
+		NodeSegment nodeSegment = new NodeSegment(keyword, NodeType.RECTANGLE, keyword.getValue(), primitiveFactory,
+				getTextRegion(keyword));
 		return wrapCardinaltiySegments(keyword, nodeSegment);
 	}
 
 	public ISegmentFigure createNodeSegment(RuleCall ruleCall) {
 		NodeSegment nodeSegment = new NodeSegment(ruleCall, NodeType.ROUNDED, ruleCall.getRule().getName(),
-				primitiveFactory);
+				primitiveFactory, getTextRegion(ruleCall));
 		return wrapCardinaltiySegments(ruleCall, nodeSegment);
 	}
 
 	public ISegmentFigure createNodeSegment(EObject grammarElement, Throwable throwable) {
-		return new NodeSegment(grammarElement, NodeType.ERROR, "ERROR", primitiveFactory);
+		return new NodeSegment(grammarElement, NodeType.ERROR, "ERROR", primitiveFactory, getTextRegion(grammarElement));
 	}
 
 	public ISegmentFigure createTrack(AbstractRule rule, ISegmentFigure body) {
-		return new RailroadTrack(rule, rule.getName(), body, primitiveFactory);
+		return new RailroadTrack(rule, rule.getName(), body, primitiveFactory, getTextRegion(rule));
 	}
 
 	public ISegmentFigure createDiagram(Grammar grammar, List<ISegmentFigure> children) {
@@ -71,6 +76,14 @@ public class Xtext2RailroadFactory {
 	public ISegmentFigure createParallel(UnorderedGroup unorderedGroup, List<ISegmentFigure> children) {
 		ParallelSegment multiSwitch = new ParallelSegment(unorderedGroup, children, primitiveFactory);
 		return wrapCardinaltiySegments(unorderedGroup, multiSwitch);
+	}
+
+	protected Region getTextRegion(EObject eObject) {
+		CompositeNode parseTreeNode = NodeUtil.getNode(eObject);
+		if (parseTreeNode != null)
+			return new Region(parseTreeNode.getOffset(), parseTreeNode.getLength());
+		else
+			return null;
 	}
 
 	protected ISegmentFigure wrapCardinaltiySegments(AbstractElement element, ISegmentFigure segment) {

@@ -23,12 +23,14 @@ public class Activator extends AbstractUIPlugin {
 	public Activator() {
 	}
 
+	@Override
 	public void start(BundleContext context) throws Exception {
 		injector = Guice.createInjector(new RailroadModule(), new SharedStateModule());
 		super.start(context);
 		plugin = this;
 	}
 
+	@Override
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);

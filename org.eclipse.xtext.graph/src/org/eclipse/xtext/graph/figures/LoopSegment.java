@@ -3,7 +3,6 @@ package org.eclipse.xtext.graph.figures;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.graph.figures.layouts.ParallelLayout;
-import org.eclipse.xtext.graph.figures.layouts.RailroadConnectionRouter;
 import org.eclipse.xtext.graph.figures.primitives.PrimitiveFigureFactory;
 
 /**
@@ -25,10 +24,10 @@ public class LoopSegment extends AbstractSegmentFigure {
 			add(crossPointSegment);
 		}
 		setExit(primitiveFactory.createCrossPoint(this));
-		primitiveFactory.createConnection(getExit(), crossPointSegment.getExit(), this, RailroadConnectionRouter.CONVEX_START);
-		primitiveFactory.createConnection(crossPointSegment.getEntry(), getEntry(), this, RailroadConnectionRouter.CONVEX_END);
-		primitiveFactory.createConnection(getExit(), child.getExit(), this, RailroadConnectionRouter.CONCAVE_START);
-		primitiveFactory.createConnection(child.getEntry(), getEntry(), this, RailroadConnectionRouter.CONCAVE_END);
+		primitiveFactory.createConnection(getExit(), crossPointSegment.getExit(), this, ILayoutConstants.CONVEX_START);
+		primitiveFactory.createConnection(crossPointSegment.getEntry(), getEntry(), this, ILayoutConstants.CONVEX_END);
+		primitiveFactory.createConnection(getExit(), child.getExit(), this, ILayoutConstants.CONCAVE_START);
+		primitiveFactory.createConnection(child.getEntry(), getEntry(), this, ILayoutConstants.CONCAVE_END);
 	}
 
 	@Override
