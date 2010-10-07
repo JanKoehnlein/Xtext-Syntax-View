@@ -9,6 +9,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.image.GIFFileFormat;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -116,8 +117,21 @@ public class RailroadView extends ViewPart {
 		Rectangle figureBounds = figure.getBounds().getCopy();
 		figure.translateToAbsolute(figureBounds);
 		figureBounds.translate(viewport.getViewLocation());
-		if (!viewportBounds.contains(figureBounds))
-			canvas.scrollSmoothTo(figureBounds.x, figureBounds.y);
+		if (!viewportBounds.contains(figureBounds)) {
+			int newX = viewportBounds.x;
+			int newY = viewportBounds.y;
+			if(viewportBounds.x > figureBounds.x) {
+				newX = figureBounds.x; 
+			} else if(viewportBounds.x + viewportBounds.getRight().x < figureBounds.getRight().x) {
+				newX = figureBounds.getRight().x - viewportBounds.width;
+			}
+			if(viewportBounds.y > figureBounds.y) {
+				newY = figureBounds.y; 
+			} else if(viewportBounds.getBottom().y < figureBounds.getBottom().y) {
+				newY = figureBounds.getBottom().y - viewportBounds.height;
+			}
+			canvas.scrollSmoothTo(newX, newY);
+		}
 	}
 
 	@Override
